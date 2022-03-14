@@ -7,11 +7,13 @@ import express from "express";
 import logging from "./config/logging";
 import config from "./config/config";
 import { sampleRoutes } from "./api/rest/v1/routes";
+import { startConnection } from "./config/database";
 
 const NAMESPACE = "Server";
 const router = express();
 
 //initializing the db
+startConnection();
 
 //-------------------
 
