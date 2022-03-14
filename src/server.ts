@@ -6,6 +6,7 @@ import express from "express";
 
 import logging from "./config/logging";
 import config from "./config/config";
+import { sampleRoutes } from "./api/rest/v1/routes";
 
 const NAMESPACE = "Server";
 const router = express();
@@ -54,7 +55,7 @@ router.use((req, res, next) => {
 });
 
 /** Routes go here */
-//router.use("/api/v1/auth", authRoutes);
+router.use("/api/v1/sample", sampleRoutes);
 //router.use("/api/sample", sampleRoutes);
 
 /** Error handling */
