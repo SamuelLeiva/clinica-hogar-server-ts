@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "compile": "npx tsc && node build/server.js",
+    "dev": "nodemon -e ts --exec \"npm run compile\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
