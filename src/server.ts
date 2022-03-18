@@ -5,7 +5,7 @@ import express from "express";
 
 import logging from "./config/logging";
 import config from "./config/config";
-import { sampleRoutes } from "./api/rest/v1/routes";
+import { authRoutes, sampleRoutes, userRoutes } from "./api/rest/v1/routes";
 import { startConnection } from "./config/database";
 
 const NAMESPACE = "Server";
@@ -57,6 +57,9 @@ router.use((req, res, next) => {
 
 /** Routes go here */
 router.use("/api/v1/sample", sampleRoutes);
+
+router.use("/api/v1/user", userRoutes);
+router.use("/api/v1/auth", authRoutes);
 //router.use("/api/sample", sampleRoutes);
 
 /** Error handling */

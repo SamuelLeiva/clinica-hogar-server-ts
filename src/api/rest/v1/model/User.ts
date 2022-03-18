@@ -1,5 +1,7 @@
 import { Schema, Document, model, Model } from "mongoose";
 
+import * as bcrypt from "bcryptjs";
+import * as jwt from "jsonwebtoken";
 import validator from "validator";
 
 interface IUser {
@@ -94,6 +96,53 @@ userSchema.virtual("appointments", {
   ref: "Appointment",
   localField: "_id",
   foreignField: "patient",
+});
+
+userSchema.static(
+  "findByCredentials",
+  async function findByCredentials(email: string, password: string) {
+    console.log(email + password);
+
+    const user = await this.findOne({ email });
+
+    //console.log("user", user);
+
+    if (!user) {
+      throw new Error("Unable to login!");
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password!);
+
+    //const isMatch = password === user.hash;
+
+    console.log("isMatch", isMatch);
+
+    if (!isMatch) {
+      throw new Error("Unable to login!");
+    }
+
+    return user;
+  }
+);
+
+//metodo que oculta la info privada. En todas las rutas
+//que devolvamos un user, se ocultará la información
+userSchema.methods.toJSON = function (this: IUserDocument) {
+  const user = this;
+  const userObject = user.toObject();
+
+  delete userObject.password;
+  delete userObject.tokens;
+  //delete userObject.avatar;
+
+  return userObject;
+};
+
+userSchema.pre("save", async function (next) {
+  const user = this;
+  if (user.isModified("password")) {
+    user.password = await bcrypt.hash(user.password, 8);
+  }
 });
 
 export default model<IUser, IUserModel>("User", userSchema);
