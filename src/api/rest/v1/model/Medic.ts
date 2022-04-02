@@ -27,13 +27,13 @@ const medicSchema = new Schema(
           type: Boolean,
           required: true,
         },
-        speciality: {
-          type: Schema.Types.ObjectId,
-          required: true,
-          ref: "Speciality",
-        },
       },
     ],
+    speciality: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "Speciality",
+    },
   },
   {
     timestamps: true,

@@ -15,7 +15,6 @@ const signIn = async (req: Request, res: Response) => {
       req.body.password
     );
 
-    console.log("user", user);
     //creamos el token
     const token = await generateAuthToken(user);
     //const token = await user.generateAuthToken();
@@ -30,11 +29,11 @@ const signIn = async (req: Request, res: Response) => {
 //registrarse
 const signUp = async (req: Request, res: Response) => {
   const user = new User(req.body);
-  console.log("user", user);
+
   try {
     await user.save();
     const token = await generateAuthToken(user);
-    console.log("token", token);
+
     res.status(201).send({ user, token });
   } catch (error) {
     logging.error(NAMESPACE, "Sign Up error");
