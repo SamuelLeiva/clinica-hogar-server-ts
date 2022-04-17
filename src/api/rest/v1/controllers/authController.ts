@@ -7,11 +7,13 @@ import User from "../model/User";
 const NAMESPACE = "Auth Controller";
 
 //iniciar sesión
-const signIn = async (req: Request, res: Response) => {
+const login = async (req: Request, res: Response) => {
+  console.log(req.body);
+
   try {
     //encontrar al user por email y password
     const user = await User.findByCredentials(
-      req.body.email,
+      req.body.userEmail,
       req.body.password
     );
 
@@ -21,7 +23,7 @@ const signIn = async (req: Request, res: Response) => {
 
     res.send({ user, token });
   } catch (error) {
-    logging.error(NAMESPACE, "Sign In error");
+    console.log(error);
     res.status(400).send(error);
   }
 };
@@ -41,4 +43,4 @@ const signUp = async (req: Request, res: Response) => {
   }
 };
 
-export { signIn, signUp };
+export { login, signUp };

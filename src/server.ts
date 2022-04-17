@@ -1,5 +1,6 @@
 import http from "http";
 import express from "express";
+import cors from "cors";
 
 //import routes
 
@@ -44,6 +45,9 @@ router.use((req, res, next) => {
 /** Parse the body of the request */
 router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
+
+/* CORS */
+//router.use(cors());
 
 /** Rules of our API */
 router.use((req, res, next) => {
