@@ -1,11 +1,18 @@
 import http from "http";
 import express from "express";
+import cors from "cors";
 
 //import routes
 
 import logging from "./config/logging";
 import config from "./config/config";
-import { authRoutes, sampleRoutes, userRoutes } from "./api/rest/v1/routes";
+import {
+  appointmentRoutes,
+  authRoutes,
+  medicRoutes,
+  specialityRoutes,
+  userRoutes,
+} from "./api/rest/v1/routes";
 import { startConnection } from "./config/database";
 
 const NAMESPACE = "Server";
@@ -39,6 +46,9 @@ router.use((req, res, next) => {
 router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
 
+/* CORS */
+//router.use(cors());
+
 /** Rules of our API */
 router.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*"); //TODO: cambiar luego
@@ -56,11 +66,13 @@ router.use((req, res, next) => {
 });
 
 /** Routes go here */
-router.use("/api/v1/sample", sampleRoutes);
+
+router.use("/api/v1/auth", authRoutes);
 
 router.use("/api/v1/user", userRoutes);
-router.use("/api/v1/auth", authRoutes);
-//router.use("/api/sample", sampleRoutes);
+router.use("/api/v1/medic", medicRoutes);
+router.use("/api/v1/speciality", specialityRoutes);
+router.use("/api/v1/appointment", appointmentRoutes);
 
 /** Error handling */
 router.use((req, res, next) => {

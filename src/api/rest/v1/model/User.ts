@@ -101,24 +101,16 @@ userSchema.virtual("appointments", {
 userSchema.static(
   "findByCredentials",
   async function findByCredentials(email: string, password: string) {
-    console.log(email + password);
-
     const user = await this.findOne({ email });
 
-    //console.log("user", user);
-
     if (!user) {
-      throw new Error("Unable to login!");
+      return null;
     }
 
     const isMatch = await bcrypt.compare(password, user.password!);
 
-    //const isMatch = password === user.hash;
-
-    console.log("isMatch", isMatch);
-
     if (!isMatch) {
-      throw new Error("Unable to login!");
+      return null;
     }
 
     return user;
