@@ -10,6 +10,13 @@ const NAMESPACE = "Auth Controller";
 const login = async (req: Request, res: Response) => {
   console.log(req.body);
 
+  const { userEmail, password } = req.body;
+
+  if (!userEmail || !password)
+    return res
+      .status(400)
+      .json({ message: "Username and password are required." });
+
   try {
     //encontrar al user por email y password
     const user = await User.findByCredentials(
@@ -17,14 +24,15 @@ const login = async (req: Request, res: Response) => {
       req.body.password
     );
 
+    if (!user) return res.sendStatus(401); //Unauthorized
+
     //creamos el token
     const token = await generateAuthToken(user);
-    //const token = await user.generateAuthToken();
 
     res.send({ user, token });
   } catch (error) {
     console.log(error);
-    res.status(400).send(error);
+    return res.status(500).send(error); //Server error
   }
 };
 

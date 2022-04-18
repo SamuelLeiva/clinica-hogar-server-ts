@@ -104,13 +104,13 @@ userSchema.static(
     const user = await this.findOne({ email });
 
     if (!user) {
-      throw new Error("Unable to login!");
+      return null;
     }
 
     const isMatch = await bcrypt.compare(password, user.password!);
 
     if (!isMatch) {
-      throw new Error("Unable to login!");
+      return null;
     }
 
     return user;
