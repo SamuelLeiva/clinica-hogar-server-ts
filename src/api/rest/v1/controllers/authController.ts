@@ -19,10 +19,9 @@ const login = async (req: Request, res: Response) => {
 
   try {
     //encontrar al user por email y password
-    const user = await User.findByCredentials(
-      req.body.userEmail,
-      req.body.password
-    );
+    const user = await User.findByCredentials(userEmail, password);
+
+    console.log("user", user);
 
     if (!user) return res.sendStatus(401); //Unauthorized
 
@@ -32,7 +31,7 @@ const login = async (req: Request, res: Response) => {
     res.send({ user, token });
   } catch (error) {
     console.log(error);
-    return res.status(500).send(error); //Server error
+    return res.status(400).send(error); //error
   }
 };
 
@@ -46,7 +45,7 @@ const signUp = async (req: Request, res: Response) => {
 
     res.status(201).send({ user, token });
   } catch (error) {
-    logging.error(NAMESPACE, "Sign Up error");
+    //logging.error(NAMESPACE, "Sign Up error");
     res.status(400).send(error);
   }
 };

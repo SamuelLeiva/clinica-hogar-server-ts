@@ -1,6 +1,5 @@
 import http from "http";
 import express from "express";
-import cors from "cors";
 
 //import routes
 
