@@ -23,6 +23,7 @@ interface IUserDocument extends IUser, Document {
 
 interface IUserModel extends Model<IUserModel> {
   //statics
+  findProfile: (email: string) => any;
   findByCredentials: (email: string, password: string) => any;
 }
 
@@ -116,6 +117,16 @@ userSchema.static(
     return user;
   }
 );
+
+userSchema.static("findProfile", async function findProfile(email: string) {
+  const user = await this.findOne({ email });
+
+  if (!user) {
+    return null;
+  }
+
+  return user;
+});
 
 //metodo que oculta la info privada. En todas las rutas
 //que devolvamos un user, se ocultará la información
