@@ -38,7 +38,7 @@ const login = async (req: Request, res: Response) => {
 const register = async (req: Request, res: Response) => {
   const user = new User(req.body);
 
-  console.log('user', user);
+  console.log("user", user);
 
   try {
     await user.save();
@@ -46,9 +46,34 @@ const register = async (req: Request, res: Response) => {
 
     res.status(201).send({ user, token });
   } catch (error) {
-    //logging.error(NAMESPACE, "Sign Up error");
     res.status(400).send(error);
   }
 };
 
-export { login, register };
+const logout = async (req: Request, res: Response) => {
+  try {
+    console.log("req.headers", req.headers);
+    console.log("req.body", req.body);
+
+    req.body.user.tokens = req.body.user.tokens.filter((token: any) => {
+      return token.token !== req.body.token;
+    });
+    await req.body.user.save();
+
+    res.send({ msg: "Success in logout" });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const logoutAll = async (req: Request, res: Response) => {
+  try {
+    req.body.user.tokens = [];
+    await req.body.user.save();
+    res.send({ msg: "Success in logging out all." });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+export { login, register, logout, logoutAll };
