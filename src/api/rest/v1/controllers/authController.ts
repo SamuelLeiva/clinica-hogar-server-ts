@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 
-import logging from "../../../../config/logging";
 import { generateAuthToken } from "../helpers";
 import User from "../model/User";
 
@@ -36,8 +35,10 @@ const login = async (req: Request, res: Response) => {
 };
 
 //registrarse
-const signUp = async (req: Request, res: Response) => {
+const register = async (req: Request, res: Response) => {
   const user = new User(req.body);
+
+  console.log('user', user);
 
   try {
     await user.save();
@@ -50,4 +51,4 @@ const signUp = async (req: Request, res: Response) => {
   }
 };
 
-export { login, signUp };
+export { login, register };
