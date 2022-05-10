@@ -15,20 +15,12 @@ import User from "../model/User";
 // };
 
 const getMyUser = async (req: Request, res: Response) => {
-  //console.log("req.headers", req.headers);
-  //console.log(req.body);
+  const user = req.body.user;
 
-  const { email } = req.body.user;
+  // const user = await User.findProfile(email);
+  // if (!user) return res.sendStatus(401);
 
-  try {
-    const user = await User.findProfile(email);
-
-    console.log(user);
-
-    return res.send(user);
-  } catch (error) {
-    return res.status(400).send(error);
-  }
+  return res.send(user);
 };
 
 export { getMyUser };

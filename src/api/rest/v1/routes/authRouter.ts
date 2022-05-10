@@ -3,16 +3,19 @@ import {
   login,
   logout,
   logoutAll,
+  refresh,
   register,
 } from "../controllers/authController";
-import { authToken } from "../middlewares/authToken";
+import { verifyJWT } from "../middlewares/verifyJWT";
 
 const router = express.Router();
 
 router.post("/login", login);
 router.post("/register", register);
 
-router.post("/logout", authToken, logout);
+router.post("/refresh", verifyJWT, refresh)
+
+router.post("/logout", verifyJWT, logout);
 router.post("/logout-all", logoutAll);
 
 export default router;

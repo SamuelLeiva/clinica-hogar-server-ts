@@ -1,9 +1,9 @@
 import express from "express";
 import { getMyUser } from "../controllers";
-import { authToken } from "../middlewares/authToken";
+import { verifyJWT } from "../middlewares/verifyJWT";
 
 const router = express.Router();
 
-router.get("/me", authToken, getMyUser);
+router.get("/me", verifyJWT, getMyUser);
 
 export default router;

@@ -13,6 +13,7 @@ import {
   userRoutes,
 } from "./api/rest/v1/routes";
 import { startConnection } from "./config/database";
+import cookieParser from "cookie-parser";
 
 const NAMESPACE = "Server";
 const router = express();
@@ -44,6 +45,9 @@ router.use((req, res, next) => {
 /** Parse the body of the request */
 router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
+
+/** Cookies Middleware */
+router.use(cookieParser())
 
 /* CORS */
 //router.use(cors());
