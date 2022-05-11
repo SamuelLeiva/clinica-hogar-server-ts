@@ -34,6 +34,10 @@ const login = async (req: Request, res: Response) => {
     maxAge: 24 * 60 * 60 * 1000,
   });
 
+  console.log('result', result);
+  console.log('accessToken', accessToken);
+  
+
   // Send authorization roles and access token to user
   res.json({ result, accessToken });
 

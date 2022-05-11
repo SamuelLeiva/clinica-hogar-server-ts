@@ -8,7 +8,10 @@ const NAMESPACE = "Auth middlewares";
 //extraer token de localStorage
 const verifyJWT = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.header("authorization") || req.header("Authorization");
+    console.log('authHeader', authHeader)
+
     if (!authHeader?.startsWith('Bearer ')) return res.sendStatus(401);
+    
     const token: string = authHeader.replace("Bearer ", "");
 
 
@@ -27,7 +30,9 @@ const verifyJWT = async (req: Request, res: Response, next: NextFunction) => {
         token,
         process.env.JWT_SECRET!
       )
+      console.log('decoded', decoded);
     } catch (error) {
+      console.log(error);
       return res.sendStatus(403);
     }
     
@@ -41,9 +46,11 @@ const verifyJWT = async (req: Request, res: Response, next: NextFunction) => {
       //aca buscar por roles cuando se agregue roles al app
     });
 
+    console.log('user', user)
+
     if (!user) return res.sendStatus(401);
 
-    //console.log('user', user)
+    
 
     //req.body.token = token;
     req.body.user = user;
