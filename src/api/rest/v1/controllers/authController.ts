@@ -20,7 +20,7 @@ const login = async (req: Request, res: Response) => {
   if (!foundUser) return res.sendStatus(401); //Unauthorized
 
   // create JWTs
-  const accessToken = await generateAuthToken(foundUser);
+  const accessToken = await generateAuthToken(foundUser, "access");
   const refreshToken = await generateAuthToken(foundUser, "refresh");
 
   foundUser.refreshToken = refreshToken;
@@ -34,9 +34,10 @@ const login = async (req: Request, res: Response) => {
     maxAge: 24 * 60 * 60 * 1000,
   });
 
-  console.log('result', result);
-  console.log('accessToken', accessToken);
-  
+  //console.log("galleta", galleta);
+
+  console.log("result", result);
+  console.log("accessToken", accessToken);
 
   // Send authorization roles and access token to user
   res.json({ result, accessToken });
@@ -97,7 +98,7 @@ const register = async (req: Request, res: Response) => {
       document,
       birthday,
       phoneNumber,
-      refreshToken: ""
+      refreshToken: "",
     });
     await user.save();
 
@@ -123,29 +124,43 @@ const register = async (req: Request, res: Response) => {
 //refresh token
 const refresh = async (req: Request, res: Response) => {
   const cookies = req.cookies;
-  console.log('cookies', cookies)
+  console.log("cookies", cookies);
   if (!cookies?.jwt) return res.sendStatus(401);
   const refreshToken = cookies.jwt;
 
   const foundUser = await User.findOne({ refreshToken });
+  console.log("foundUser", foundUser);
   if (!foundUser) return res.sendStatus(403); //Forbidden
-  // evaluate jwt
-  // jwt.verify(refreshToken, process.env.JWT_REFRESH_TOKEN_SECRET!, (err, decoded) => {
+
+  // evaluate refresh jwt
+  let decoded: any;
+
+  try {
+    decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_TOKEN_SECRET!);
+    console.log(decoded);
+  } catch (error) {
+    return res.sendStatus(403);
+  }
+
+  if (foundUser._id.toString() !== decoded._id) return res.sendStatus(403); //Unauthorized
+
+  // jwt.verify(refreshToken, process.env.JWT_REFRESH_TOKEN_SECRET!, (err: any, decoded: any) => {
   //   if (err || foundUser.username! !== decoded.username)
   //     return res.sendStatus(403);
 
-    const accessToken = generateAuthToken(foundUser);
-    // const accessToken = jwt.sign(
-    //   {
-    //     UserInfo: {
-    //       username: decoded.username,
-    //       roles: roles,
-    //     },
-    //   },
-    //   process.env.ACCESS_TOKEN_SECRET,
-    //   { expiresIn: "10s" }
-    // );
-    res.json({ foundUser, accessToken });
+  const accessToken = await generateAuthToken(foundUser, "access");
+  // const accessToken = jwt.sign(
+  //   {
+  //     UserInfo: {
+  //       username: decoded.username,
+  //       roles: roles,
+  //     },
+  //   },
+  //   process.env.ACCESS_TOKEN_SECRET,
+  //   { expiresIn: "10s" }
+  // );
+  console.log("accessToken", accessToken);
+  res.json({ foundUser, accessToken });
 };
 
 const logout = async (req: Request, res: Response) => {
