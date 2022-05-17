@@ -13,13 +13,6 @@ const verifyJWT = async (req: Request, res: Response, next: NextFunction) => {
   if (!authHeader?.startsWith("Bearer ")) return res.sendStatus(401);
 
   const token: string = authHeader.replace("Bearer ", "");
-  // jwt.verify(
-  //   token,
-  //   process.env.JWT_SECRET!,
-  //   (err, decoded) => {
-  //     if(err) return res.sendStatus(403)
-  //   }
-  // )
 
   let decoded: any;
 
@@ -30,8 +23,6 @@ const verifyJWT = async (req: Request, res: Response, next: NextFunction) => {
     console.log(error);
     return res.sendStatus(403);
   }
-
-  //if(!decoded) return res.sendStatus(403);
 
   const user = await User.findOne({
     _id: decoded._id,
@@ -47,10 +38,5 @@ const verifyJWT = async (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
-const verifyJWTRefresh = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {};
 
 export { verifyJWT };
