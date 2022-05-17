@@ -1,17 +1,20 @@
 import * as jwt from "jsonwebtoken";
 
-const generateAuthToken = async (user: any) => {
-  const token = jwt.sign(
-    { _id: user._id.toString() },
-    process.env.JWT_SECRET!,
-    {
-      expiresIn: 1000000,
-    }
-  );
+const generateAuthToken = async (user: any, tokenType: string) => {
+  let token = "";
+  if (tokenType === "access") {
+    token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET!, {
+      expiresIn: "10s",
+    });
+  } else if (tokenType === "refresh") {
+    token = jwt.sign(
+      { _id: user._id.toString() },
+      process.env.JWT_REFRESH_TOKEN_SECRET!,
+      { expiresIn: "1d" }
+    );
+  }
 
-  user.tokens = user.tokens.concat({ token });
-
-  await user.save();
+  console.log("tokenType", tokenType);
 
   return token;
 };

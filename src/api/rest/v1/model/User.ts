@@ -1,7 +1,6 @@
 import { Schema, Document, model, Model } from "mongoose";
 
 import * as bcrypt from "bcryptjs";
-import * as jwt from "jsonwebtoken";
 import validator from "validator";
 
 interface IUser {
@@ -10,15 +9,13 @@ interface IUser {
   firstName?: string;
   lastName?: string;
   password?: string;
-  tokens?: Array<string>;
-
-  //static
-  //findOne(): Promise<this>;
+  //tokens?: Array<string>;
+  refreshToken?: string;
 }
 
 interface IUserDocument extends IUser, Document {
   //methods
-  generateAuthToken: () => any;
+  //generateAuthToken: () => any;
 }
 
 interface IUserModel extends Model<IUserModel> {
@@ -78,14 +75,17 @@ const userSchema = new Schema(
       type: Date,
       default: null,
     },
-    tokens: [
-      {
-        token: {
-          type: String,
-          required: true,
-        },
-      },
-    ],
+    // tokens: [
+    //   {
+    //     token: {
+    //       type: String,
+    //       required: true,
+    //     },
+    //   },
+    // ],
+    refreshToken: {
+      type: String,
+    },
   },
   {
     timestamps: true,
@@ -135,7 +135,8 @@ userSchema.methods.toJSON = function (this: IUserDocument) {
   const userObject = user.toObject();
 
   delete userObject.password;
-  delete userObject.tokens;
+  delete userObject.refreshToken;
+  //delete userObject.tokens;
   //delete userObject.avatar;
 
   return userObject;

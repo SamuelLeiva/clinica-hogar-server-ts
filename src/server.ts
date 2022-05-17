@@ -1,5 +1,6 @@
 import http from "http";
 import express from "express";
+import cors from "cors";
 
 //import routes
 
@@ -13,6 +14,9 @@ import {
   userRoutes,
 } from "./api/rest/v1/routes";
 import { startConnection } from "./config/database";
+import cookieParser from "cookie-parser";
+import { corsOptions } from "./config/corsOptions";
+import { allowedOrigins } from "./config/constants/allowedOrigins";
 
 const NAMESPACE = "Server";
 const router = express();
@@ -22,7 +26,7 @@ startConnection();
 
 //-------------------
 
-/** Log the request */
+/** Logger */
 router.use((req, res, next) => {
   /** Log the req */
   logging.info(
@@ -41,28 +45,53 @@ router.use((req, res, next) => {
   next();
 });
 
+//use credentials
+router.use((req, res, next) => {
+  const origin = req.headers.origin!;
+  if (allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Credentials", "true");
+  }
+  next();
+});
+
+//cors
+router.use(cors(corsOptions));
+
 /** Parse the body of the request */
 router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
 
+/** Cookies Middleware */
+router.use(cookieParser());
+
 /* CORS */
-//router.use(cors());
+//router.use(cors(corsOptions));
 
 /** Rules of our API */
-router.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*"); //TODO: cambiar luego
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
+// router.use((req, res, next) => {
+//   //let origin = req.headers.origin!;
+//   if (allowedOrigins.includes(req.headers.origin!)) {
+//     //res.header("Access-Control-Allow-Origin", origin); // restrict it to the required domain
+//     res.header("Access-Control-Allow-Credentials", "true");
+//   }
 
-  if (req.method == "OPTIONS") {
-    res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
-    return res.status(200).json({});
-  }
+//   //res.header("Access-Control-Allow-Credentials", true);
 
-  next();
-});
+//   res.header("Access-Control-Allow-Origin", "*"); //TODO: cambiar luego
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cookie"
+//   );
+
+//   if (req.method === "OPTIONS") {
+//     res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
+//     return res.status(200).json({});
+//   }
+
+//   //console.log("res.header", res.header("Access-Control-Allow-Origin"));
+
+//   next();
+// });
 
 /** Routes go here */
 

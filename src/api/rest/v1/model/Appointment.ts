@@ -1,4 +1,18 @@
-import { model, Schema } from "mongoose";
+import { model, Model, Schema } from "mongoose";
+
+interface IAppointment {
+  date: Date;
+}
+
+interface IAppointmentDocument extends IAppointment, Document {
+  //methods
+  //generateAuthToken: () => any;
+}
+
+interface IAppointmentModel extends Model<IAppointmentModel> {
+  //statics
+  findByPatient: (id: string) => any;
+}
 
 const appointmentSchema = new Schema(
   {
@@ -22,4 +36,19 @@ const appointmentSchema = new Schema(
   }
 );
 
-export default model("Appointment", appointmentSchema);
+appointmentSchema.static("findByPatient", async function findByPatient(id: string) {
+  const appointments: any = await this.find({ patient: id }).populate({
+    path: 'medic',
+    populate: { path: 'speciality'}
+  });
+
+  console.log('appointments', appointments)
+
+  if (!appointments) {
+    return null;
+  }
+
+  return appointments;
+});
+
+export default model<IAppointment, IAppointmentModel>("Appointment", appointmentSchema);

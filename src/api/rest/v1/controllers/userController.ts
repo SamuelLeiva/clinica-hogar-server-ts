@@ -1,34 +1,14 @@
 import { Request, Response } from "express";
-import User from "../model/User";
-
-// const postUser = async (req: Request, res: Response) => {
-//   const user = new User({
-//     ...req.body,
-//   });
-
-//   try {
-//     await user.save();
-//     await res.status(201).send(user);
-//   } catch (error) {
-//     res.status(400).send(error);
-//   }
-// };
 
 const getMyUser = async (req: Request, res: Response) => {
-  //console.log("req.headers", req.headers);
-  //console.log(req.body);
+  const user = req.body.user;
 
-  const { email } = req.body.user;
+  console.log("user", user);
 
-  try {
-    const user = await User.findProfile(email);
+  // const user = await User.findProfile(email);
+  // if (!user) return res.sendStatus(401);
 
-    console.log(user);
-
-    return res.send(user);
-  } catch (error) {
-    return res.status(400).send(error);
-  }
+  return res.send(user);
 };
 
 export { getMyUser };

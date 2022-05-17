@@ -47,10 +47,10 @@ const postAppointment = async (req: Request, res: Response) => {
 
 //custom methods
 const getAppointmentsByUser = async (req: Request, res: Response) => {
+  console.log(req.body.user.email)
   try {
-    const appointments = await Appointment.find({
-      patient: req.params.patient,
-    });
+    const appointments = await Appointment.findByPatient(req.body.user._id.toString());
+    if(!appointments) return res.sendStatus(404);
     res.send(appointments);
   } catch (error) {
     res.status(500).send(error);
