@@ -4,12 +4,8 @@ import * as bcrypt from "bcryptjs";
 import validator from "validator";
 
 interface IUser {
-  //_id?: ObjectId;
   email?: string;
-  firstName?: string;
-  lastName?: string;
   password?: string;
-  //tokens?: Array<string>;
   refreshToken?: string;
 }
 
@@ -42,50 +38,20 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
-    firstName: {
+    refreshToken: {
       type: String,
-      required: true,
-      trim: true,
+      default: "",
     },
-    lastNameF: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    lastNameM: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    document: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    birthday: {
-      type: Date,
-      required: true,
-    },
-    phoneNumber: {
-      type: String,
-      required: true,
-    },
-    deleted_at: {
+    deletedAt: {
       type: Date,
       default: null,
     },
-    // tokens: [
-    //   {
-    //     token: {
-    //       type: String,
-    //       required: true,
-    //     },
-    //   },
-    // ],
-    refreshToken: {
-      type: String,
-    },
+    patients: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Patient",
+      },
+    ],
   },
   {
     timestamps: true,
@@ -93,11 +59,11 @@ const userSchema = new Schema(
 );
 
 //relacion con citas
-userSchema.virtual("appointments", {
-  ref: "Appointment",
-  localField: "_id",
-  foreignField: "patient",
-});
+// userSchema.virtual("appointments", {
+//   ref: "Appointment",
+//   localField: "_id",
+//   foreignField: "user",
+// });
 
 userSchema.static(
   "findByCredentials",
@@ -136,8 +102,6 @@ userSchema.methods.toJSON = function (this: IUserDocument) {
 
   delete userObject.password;
   delete userObject.refreshToken;
-  //delete userObject.tokens;
-  //delete userObject.avatar;
 
   return userObject;
 };

@@ -23,7 +23,7 @@ const appointmentSchema = new Schema(
     patient: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: "User",
+      ref: "Patient",
     },
     medic: {
       type: Schema.Types.ObjectId,
@@ -36,19 +36,25 @@ const appointmentSchema = new Schema(
   }
 );
 
-appointmentSchema.static("findByPatient", async function findByPatient(id: string) {
-  const appointments: any = await this.find({ patient: id }).populate({
-    path: 'medic',
-    populate: { path: 'speciality'}
-  });
+appointmentSchema.static(
+  "findByPatient",
+  async function findByPatient(id: string) {
+    const appointments: any = await this.find({ patient: id }).populate({
+      path: "medic",
+      populate: { path: "speciality" },
+    });
 
-  console.log('appointments', appointments)
+    console.log("appointments", appointments);
 
-  if (!appointments) {
-    return null;
+    if (!appointments) {
+      return null;
+    }
+
+    return appointments;
   }
+);
 
-  return appointments;
-});
-
-export default model<IAppointment, IAppointmentModel>("Appointment", appointmentSchema);
+export default model<IAppointment, IAppointmentModel>(
+  "Appointment",
+  appointmentSchema
+);
