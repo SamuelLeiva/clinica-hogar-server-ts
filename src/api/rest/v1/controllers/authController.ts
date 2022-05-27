@@ -54,6 +54,8 @@ const register = async (req: Request, res: Response) => {
     lastNameF,
     lastNameM,
     document,
+    sex,
+    documentType,
     birthday,
     phoneNumber,
   } = req.body;
@@ -69,12 +71,14 @@ const register = async (req: Request, res: Response) => {
   const duplicatePatient = await Patient.findOne({ document });
 
   let user;
+  let userDB;
   try {
     if (duplicatePatient) {
       //conectamos al paciente y creamos
       user = new User({
         email,
         password,
+        document,
         patients: [duplicatePatient._id],
       });
       const userDB = await user.save();
@@ -91,6 +95,8 @@ const register = async (req: Request, res: Response) => {
         lastNameF,
         lastNameM,
         document,
+        documentType,
+        sex,
         birthday,
         phoneNumber,
       });
@@ -100,9 +106,10 @@ const register = async (req: Request, res: Response) => {
       user = new User({
         email,
         password,
+        document,
         patients: [patientDB._id],
       });
-      const userDB = await user.save();
+      userDB = await user.save();
 
       //actualizamos el paciente
       await Patient.updateOne(
@@ -110,8 +117,10 @@ const register = async (req: Request, res: Response) => {
         { $push: { users: userDB._id } }
       );
     }
-    return res.status(201).json({ success: `New user ${user} created!` });
+    return res.status(201).send(userDB);
   } catch (error: any) {
+    console.log(error);
+
     res.status(500).json({ message: error.message });
   }
 };

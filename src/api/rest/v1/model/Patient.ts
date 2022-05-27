@@ -7,6 +7,7 @@ interface IPatient {
   document?: string;
   birthday?: string;
   phoneNumber?: string;
+  sex?: string;
   users?: Array<any>;
 }
 
@@ -38,6 +39,10 @@ const patientSchema = new Schema(
       required: true,
       trim: true,
     },
+    documentType: {
+      type: String,
+      required: true,
+    },
     document: {
       type: String,
       required: true,
@@ -47,6 +52,10 @@ const patientSchema = new Schema(
 
     birthday: {
       type: Date,
+      required: true,
+    },
+    sex: {
+      type: String,
       required: true,
     },
     phoneNumber: {

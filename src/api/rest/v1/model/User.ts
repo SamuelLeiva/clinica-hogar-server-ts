@@ -7,6 +7,7 @@ interface IUser {
   email?: string;
   password?: string;
   refreshToken?: string;
+  document?: string;
 }
 
 interface IUserDocument extends IUser, Document {
@@ -38,6 +39,10 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    document: {
+      type: String,
+      required: true,
+    },
     refreshToken: {
       type: String,
       default: "",
@@ -57,13 +62,6 @@ const userSchema = new Schema(
     timestamps: true,
   }
 );
-
-//relacion con citas
-// userSchema.virtual("appointments", {
-//   ref: "Appointment",
-//   localField: "_id",
-//   foreignField: "user",
-// });
 
 userSchema.static(
   "findByCredentials",
