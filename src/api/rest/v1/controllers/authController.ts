@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import * as jwt from "jsonwebtoken";
 
 import { generateAuthToken } from "../helpers";
+import Patient from "../model/Patient";
 
 import User from "../model/User";
 
@@ -41,29 +42,6 @@ const login = async (req: Request, res: Response) => {
 
   // Send authorization roles and access token to user
   res.json({ result, accessToken });
-
-  // if (!userEmail || !password)
-  //   return res
-  //     .status(400)
-  //     .json({ message: "Username and password are required." });
-
-  // // try {
-  // //encontrar al user por email y password
-  // const user = await User.findByCredentials(userEmail, password);
-
-  // console.log("user", user);
-
-  // if (!user) return res.sendStatus(401); //Unauthorized
-
-  // //creamos el token
-  // const token = await generateAuthToken(user);
-
-  // //creamos refresh token
-  // const refreshToken = res.send({ user, token });
-  // // } catch (error) {
-  // //   console.log(error);
-  // //   return res.status(400).send(error); //error
-  // // }
 };
 
 //registrarse
@@ -76,6 +54,8 @@ const register = async (req: Request, res: Response) => {
     lastNameF,
     lastNameM,
     document,
+    sex,
+    documentType,
     birthday,
     phoneNumber,
   } = req.body;
@@ -88,37 +68,61 @@ const register = async (req: Request, res: Response) => {
   const duplicate = await User.findOne({ email });
   if (duplicate) return res.sendStatus(409); //Conflict
 
-  try {
-    const user = new User({
-      email,
-      password,
-      firstName,
-      lastNameF,
-      lastNameM,
-      document,
-      birthday,
-      phoneNumber,
-      refreshToken: "",
-    });
-    await user.save();
+  const duplicatePatient = await Patient.findOne({ document });
 
-    res.status(201).json({ success: `New user ${user} created!` });
+  let user;
+  let userDB;
+  try {
+    if (duplicatePatient) {
+      //conectamos al paciente y creamos
+      user = new User({
+        email,
+        password,
+        document,
+        patients: [duplicatePatient._id],
+      });
+      const userDB = await user.save();
+
+      //actualizamos el paciente
+      await Patient.updateOne(
+        { _id: duplicatePatient._id },
+        { $push: { users: userDB._id } }
+      );
+    } else {
+      //creamos el paciente
+      const patient = new Patient({
+        firstName,
+        lastNameF,
+        lastNameM,
+        document,
+        documentType,
+        sex,
+        birthday,
+        phoneNumber,
+      });
+
+      const patientDB = await patient.save();
+
+      user = new User({
+        email,
+        password,
+        document,
+        patients: [patientDB._id],
+      });
+      userDB = await user.save();
+
+      //actualizamos el paciente
+      await Patient.updateOne(
+        { _id: patientDB._id },
+        { $push: { users: userDB._id } }
+      );
+    }
+    return res.status(201).send(userDB);
   } catch (error: any) {
+    console.log(error);
+
     res.status(500).json({ message: error.message });
   }
-
-  // const user = new User(req.body);
-
-  // console.log("user", user);
-
-  // try {
-  //   await user.save();
-  //   const token = await generateAuthToken(user);
-
-  //   res.status(201).send({ user, token });
-  // } catch (error) {
-  //   res.status(400).send(error);
-  // }
 };
 
 //refresh token
