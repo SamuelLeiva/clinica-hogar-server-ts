@@ -6,7 +6,6 @@ import {
   refresh,
   register,
 } from "../controllers/authController";
-//import { verifyJWT } from "../middlewares/verifyJWT";
 
 const router = express.Router();
 

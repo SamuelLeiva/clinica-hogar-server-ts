@@ -12,7 +12,6 @@ interface IUser {
 
 interface IUserDocument extends IUser, Document {
   //methods
-  //generateAuthToken: () => any;
 }
 
 interface IUserModel extends Model<IUserModel> {
@@ -92,8 +91,7 @@ userSchema.static("findProfile", async function findProfile(email: string) {
   return user;
 });
 
-//metodo que oculta la info privada. En todas las rutas
-//que devolvamos un user, se ocultará la información
+//hides private info in the responses
 userSchema.methods.toJSON = function (this: IUserDocument) {
   const user = this;
   const userObject = user.toObject();

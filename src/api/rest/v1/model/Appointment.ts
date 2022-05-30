@@ -6,7 +6,6 @@ interface IAppointment {
 
 interface IAppointmentDocument extends IAppointment, Document {
   //methods
-  //generateAuthToken: () => any;
 }
 
 interface IAppointmentModel extends Model<IAppointmentModel> {

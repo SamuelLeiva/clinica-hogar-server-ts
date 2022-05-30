@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import Medic from "../model/Medic";
-import { Schema } from "mongoose";
 
 const getAllMedics = async (req: Request, res: Response) => {
   try {

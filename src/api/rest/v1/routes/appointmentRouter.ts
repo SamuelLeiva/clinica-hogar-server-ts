@@ -16,7 +16,4 @@ router.get("/:id", getAppointment);
 
 router.post("/patient/:idPatient/medic/:idMedic", postAppointment);
 
-//router.get("/:patient", getAppointmentsByUser);
-
-
 export default router;

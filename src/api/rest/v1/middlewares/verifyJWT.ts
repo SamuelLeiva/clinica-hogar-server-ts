@@ -26,17 +26,15 @@ const verifyJWT = async (req: Request, res: Response, next: NextFunction) => {
 
   const user = await User.findOne({
     _id: decoded._id,
-    //aca buscar por roles cuando se agregue roles al app
+    //aca buscar por roles cuando se agregue roles al app (ver auth con dave)
   });
 
   console.log("user", user);
 
   if (!user) return res.sendStatus(401);
 
-  //req.body.token = token;
   req.body.user = user;
   next();
 };
-
 
 export { verifyJWT };

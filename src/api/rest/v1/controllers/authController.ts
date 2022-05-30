@@ -35,11 +35,6 @@ const login = async (req: Request, res: Response) => {
     maxAge: 24 * 60 * 60 * 1000,
   });
 
-  //console.log("galleta", galleta);
-
-  console.log("result", result);
-  console.log("accessToken", accessToken);
-
   // Send authorization roles and access token to user
   res.json({ result, accessToken });
 };
@@ -119,8 +114,6 @@ const register = async (req: Request, res: Response) => {
     }
     return res.status(201).send(userDB);
   } catch (error: any) {
-    console.log(error);
-
     res.status(500).json({ message: error.message });
   }
 };
@@ -128,12 +121,12 @@ const register = async (req: Request, res: Response) => {
 //refresh token
 const refresh = async (req: Request, res: Response) => {
   const cookies = req.cookies;
-  console.log("cookies", cookies);
+
   if (!cookies?.jwt) return res.sendStatus(401);
   const refreshToken = cookies.jwt;
 
   const foundUser = await User.findOne({ refreshToken });
-  console.log("foundUser", foundUser);
+
   if (!foundUser) return res.sendStatus(403); //Forbidden
 
   // evaluate refresh jwt
@@ -141,29 +134,14 @@ const refresh = async (req: Request, res: Response) => {
 
   try {
     decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_TOKEN_SECRET!);
-    console.log(decoded);
   } catch (error) {
     return res.sendStatus(403);
   }
 
   if (foundUser._id.toString() !== decoded._id) return res.sendStatus(403); //Unauthorized
 
-  // jwt.verify(refreshToken, process.env.JWT_REFRESH_TOKEN_SECRET!, (err: any, decoded: any) => {
-  //   if (err || foundUser.username! !== decoded.username)
-  //     return res.sendStatus(403);
-
   const accessToken = await generateAuthToken(foundUser, "access");
-  // const accessToken = jwt.sign(
-  //   {
-  //     UserInfo: {
-  //       username: decoded.username,
-  //       roles: roles,
-  //     },
-  //   },
-  //   process.env.ACCESS_TOKEN_SECRET,
-  //   { expiresIn: "10s" }
-  // );
-  console.log("accessToken", accessToken);
+
   res.json({ foundUser, accessToken });
 };
 
@@ -184,24 +162,9 @@ const logout = async (req: Request, res: Response) => {
   // Delete refreshToken in db
   foundUser.refreshToken = "";
   const result = await foundUser.save();
-  console.log(result);
 
   res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true });
   res.sendStatus(204);
-
-  // try {
-  //   console.log("req.headers", req.headers);
-  //   console.log("req.body", req.body);
-
-  //   req.body.user.tokens = req.body.user.tokens.filter((token: any) => {
-  //     return token.token !== req.body.token;
-  //   });
-  //   await req.body.user.save();
-
-  //   res.send({ msg: "Success in logout" });
-  // } catch (error) {
-  //   res.status(500).send(error);
-  // }
 };
 
 const logoutAll = async (req: Request, res: Response) => {

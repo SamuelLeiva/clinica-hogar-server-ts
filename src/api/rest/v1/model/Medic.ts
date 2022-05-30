@@ -40,7 +40,7 @@ const medicSchema = new Schema(
   }
 );
 
-//relacion con appointments
+//relationships
 medicSchema.virtual("appointments", {
   ref: "Appointment",
   localField: "_id",

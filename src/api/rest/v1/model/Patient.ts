@@ -13,13 +13,10 @@ interface IPatient {
 
 interface IPatientDocument extends IPatient, Document {
   //methods
-  //generateAuthToken: () => any;
 }
 
 interface IPatientModel extends Model<IPatientModel> {
   //statics
-  //   findProfile: (email: string) => any;
-  //   findByCredentials: (email: string, password: string) => any;
 }
 
 const patientSchema = new Schema(
@@ -78,7 +75,7 @@ const patientSchema = new Schema(
   }
 );
 
-//relacion con citas
+//relationships
 patientSchema.virtual("appointments", {
   ref: "Appointment",
   localField: "_id",
