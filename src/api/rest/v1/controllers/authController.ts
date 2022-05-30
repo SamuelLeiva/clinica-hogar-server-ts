@@ -122,6 +122,8 @@ const register = async (req: Request, res: Response) => {
 const refresh = async (req: Request, res: Response) => {
   const cookies = req.cookies;
 
+  console.log("cookies", cookies);
+
   if (!cookies?.jwt) return res.sendStatus(401);
   const refreshToken = cookies.jwt;
 
@@ -148,11 +150,14 @@ const refresh = async (req: Request, res: Response) => {
 const logout = async (req: Request, res: Response) => {
   // On client, also delete the accessToken
   const cookies = req.cookies;
+  console.log("cookies", cookies);
   if (!cookies?.jwt) return res.sendStatus(204); //No content
   const refreshToken = cookies.jwt;
 
   // Is refreshToken in db?
   const foundUser: any = await User.findOne({ refreshToken });
+
+  console.log("foundUser", foundUser);
 
   if (!foundUser) {
     res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true });
@@ -162,9 +167,12 @@ const logout = async (req: Request, res: Response) => {
   // Delete refreshToken in db
   foundUser.refreshToken = "";
   const result = await foundUser.save();
+  console.log(result);
 
   res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true });
+  //res.send({ messge: "Cleaned cookie." }).status(204);
   res.sendStatus(204);
+  //console.log(res.status);
 };
 
 const logoutAll = async (req: Request, res: Response) => {
