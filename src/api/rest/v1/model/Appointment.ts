@@ -2,22 +2,25 @@ import { model, Model, Schema } from "mongoose";
 
 interface IAppointment {
   date: Date;
+  medic?: any;
+  patient?: any;
 }
 
 interface IAppointmentDocument extends IAppointment, Document {
   //methods
 }
 
-interface IAppointmentModel extends Model<IAppointmentModel> {
+interface IAppointmentModel extends Model<IAppointmentDocument> {
   //statics
   findByPatient: (id: string) => any;
 }
 
-const appointmentSchema = new Schema(
+const appointmentSchema: Schema<IAppointmentDocument> = new Schema(
   {
     date: {
       type: Date,
       required: true,
+      unique: true,
     },
     patient: {
       type: Schema.Types.ObjectId,
@@ -53,7 +56,9 @@ appointmentSchema.static(
   }
 );
 
-export default model<IAppointment, IAppointmentModel>(
+const appointment = model<IAppointmentDocument, IAppointmentModel>(
   "Appointment",
   appointmentSchema
 );
+
+export default appointment;

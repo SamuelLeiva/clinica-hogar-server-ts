@@ -8,19 +8,21 @@ interface IUser {
   password?: string;
   refreshToken?: string;
   document?: string;
+  deletedAt?: Date;
+  patients?: Array<any>;
 }
 
 interface IUserDocument extends IUser, Document {
   //methods
 }
 
-interface IUserModel extends Model<IUserModel> {
-  //statics
+interface IUserModel extends Model<IUserDocument> {
+  //statics query methods
   findProfile: (email: string) => any;
   findByCredentials: (email: string, password: string) => any;
 }
 
-const userSchema = new Schema(
+const userSchema: Schema<IUserDocument> = new Schema(
   {
     email: {
       type: String,
@@ -105,8 +107,10 @@ userSchema.methods.toJSON = function (this: IUserDocument) {
 userSchema.pre("save", async function (next) {
   const user = this;
   if (user.isModified("password")) {
-    user.password = await bcrypt.hash(user.password, 8);
+    user.password = await bcrypt.hash(user.password!, 8);
   }
 });
 
-export default model<IUser, IUserModel>("User", userSchema);
+const User = model<IUserDocument, IUserModel>("User", userSchema);
+
+export default User;
