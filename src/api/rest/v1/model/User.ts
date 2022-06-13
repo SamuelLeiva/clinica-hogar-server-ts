@@ -2,6 +2,8 @@ import { Schema, Document, model, Model } from "mongoose";
 
 import * as bcrypt from "bcryptjs";
 import validator from "validator";
+import Patient from "./Patient";
+import mongoose from "mongoose";
 
 interface IUser {
   email?: string;
@@ -12,8 +14,9 @@ interface IUser {
   patients?: Array<any>;
 }
 
-interface IUserDocument extends IUser, Document {
+export interface IUserDocument extends IUser, Document {
   //methods
+  setPatient: (patientId: string) => Promise<void>;
 }
 
 interface IUserModel extends Model<IUserDocument> {

@@ -1,4 +1,6 @@
 import { Schema, Document, model, Model } from "mongoose";
+import User from "./User";
+import mongoose from "mongoose";
 
 interface IPatient {
   firstName?: string;
@@ -14,9 +16,10 @@ interface IPatient {
   appointments?: Array<any>;
 }
 
-interface IPatientDocument extends IPatient, Document {
+export interface IPatientDocument extends IPatient, Document {
   //methods
   addAppointment: (appointment: any) => Promise<void>;
+  setUser: (userId: string) => Promise<typeof Patient>;
 }
 
 interface IPatientModel extends Model<IPatientDocument> {
@@ -49,7 +52,6 @@ const patientSchema: Schema<IPatientDocument> = new Schema(
       type: String,
       required: true,
       trim: true,
-      unique: true,
     },
 
     birthday: {
@@ -95,13 +97,20 @@ patientSchema.virtual("appointments", {
   foreignField: "patient",
 });
 
-//metodo que genera el token
-patientSchema.methods.addAppointment = async function (appointment: any) {
-  const patient = this;
-  patient.appointments = patient.appointments.concat({ appointment });
+//a;ade appointment (cambiar despues)
+// patientSchema.methods.addAppointment = async function (appointment: any) {
+//   const patient = this;
+//   patient.appointments = patient.appointments.concat({ appointment });
 
-  //await patient.save();
-};
+//   //await patient.save();
+// };
+
+// patientSchema.methods.setUser = async function (user: any) {
+// const patient = this;
+// patient.users = patient.users.concat(user._id);
+// console.log("patient.users", patient.users);
+// await patient.save();
+// };
 
 const Patient = model<IPatientDocument, IPatientModel>(
   "Patient",

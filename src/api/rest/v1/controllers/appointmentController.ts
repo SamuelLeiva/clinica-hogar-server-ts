@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import mongoose from "mongoose";
 import Appointment from "../model/Appointment";
 import Medic from "../model/Medic";
 import Patient from "../model/Patient";
@@ -49,13 +50,18 @@ const postAppointment = async (req: Request, res: Response) => {
 
 //custom methods
 const getAppointmentsByPatient = async (req: Request, res: Response) => {
-  const patient = await Patient.findById(req.params.idPatient).populate(
-    "appointments"
-  );
+  const appointments = await Appointment.find({
+    patient: new mongoose.Types.ObjectId(req.params.idPatient),
+  })
+    .populate({
+      path: "medic",
+      populate: {
+        path: "speciality",
+      },
+    })
+    .populate("patient");
 
-  console.log("patient", patient);
-
-  return res.send(patient!.appointments);
+  return res.send(appointments);
 };
 
 export {
