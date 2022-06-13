@@ -4,6 +4,7 @@ interface IAppointment {
   date: Date;
   medic?: any;
   patient?: any;
+  appointmentType?: string;
 }
 
 interface IAppointmentDocument extends IAppointment, Document {
@@ -21,6 +22,10 @@ const appointmentSchema: Schema<IAppointmentDocument> = new Schema(
       type: Date,
       required: true,
       unique: true,
+    },
+    appointmentType: {
+      type: String,
+      required: true,
     },
     patient: {
       type: Schema.Types.ObjectId,

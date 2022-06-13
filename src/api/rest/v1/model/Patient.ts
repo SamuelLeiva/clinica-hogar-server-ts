@@ -52,6 +52,7 @@ const patientSchema: Schema<IPatientDocument> = new Schema(
       type: String,
       required: true,
       trim: true,
+      unique: true,
     },
 
     birthday: {

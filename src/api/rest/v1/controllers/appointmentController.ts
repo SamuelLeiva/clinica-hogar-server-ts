@@ -32,10 +32,11 @@ const postAppointment = async (req: Request, res: Response) => {
   const patient = await Patient.findById(req.params.idPatient);
   const medic = await Medic.findById(req.params.idMedic);
 
-  const { date } = req.body;
+  const { date, appointmentType } = req.body;
 
   const appointment = new Appointment({
     date,
+    appointmentType,
     patient,
     medic,
   });
