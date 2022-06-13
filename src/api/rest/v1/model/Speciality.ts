@@ -24,4 +24,6 @@ specialitySchema.virtual("medics", {
   foreignField: "speciality",
 });
 
-export default model("Speciality", specialitySchema);
+const Speciality = model("Speciality", specialitySchema);
+
+export default Speciality;

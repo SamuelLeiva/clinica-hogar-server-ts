@@ -47,4 +47,6 @@ medicSchema.virtual("appointments", {
   foreignField: "medic",
 });
 
-export default model("Medic", medicSchema);
+const Medic = model("Medic", medicSchema);
+
+export default Medic;

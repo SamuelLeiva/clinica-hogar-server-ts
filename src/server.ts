@@ -8,6 +8,7 @@ import {
   appointmentRoutes,
   authRoutes,
   medicRoutes,
+  patientRoutes,
   specialityRoutes,
   userRoutes,
 } from "./api/rest/v1/routes";
@@ -65,6 +66,7 @@ router.use("/api/v1/auth", authRoutes);
 
 router.use("/api/v1/user", userRoutes);
 router.use("/api/v1/medic", medicRoutes);
+router.use("/api/v1/patient", patientRoutes);
 router.use("/api/v1/speciality", specialityRoutes);
 router.use("/api/v1/appointment", appointmentRoutes);
 

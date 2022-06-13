@@ -29,7 +29,7 @@ const verifyJWT = async (req: Request, res: Response, next: NextFunction) => {
     //aca buscar por roles cuando se agregue roles al app (ver auth con dave)
   });
 
-  console.log("user", user);
+  //console.log("user", user);
 
   if (!user) return res.sendStatus(401);
 

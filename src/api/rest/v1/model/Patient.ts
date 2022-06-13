@@ -1,25 +1,33 @@
 import { Schema, Document, model, Model } from "mongoose";
+import User from "./User";
+import mongoose from "mongoose";
 
 interface IPatient {
   firstName?: string;
   lastNameF?: string;
   lastNameM?: string;
+  documentType?: string;
   document?: string;
   birthday?: string;
   phoneNumber?: string;
   sex?: string;
+  deletedAt?: Date;
   users?: Array<any>;
+  appointments?: Array<any>;
 }
 
-interface IPatientDocument extends IPatient, Document {
+export interface IPatientDocument extends IPatient, Document {
   //methods
+  addAppointment: (appointment: any) => Promise<void>;
+  setUser: (userId: string) => Promise<typeof Patient>;
 }
 
-interface IPatientModel extends Model<IPatientModel> {
+interface IPatientModel extends Model<IPatientDocument> {
   //statics
+  //addAppointment: (appointment: any) => Promise<void>;
 }
 
-const patientSchema = new Schema(
+const patientSchema: Schema<IPatientDocument> = new Schema(
   {
     firstName: {
       type: String,
@@ -44,7 +52,6 @@ const patientSchema = new Schema(
       type: String,
       required: true,
       trim: true,
-      unique: true,
     },
 
     birthday: {
@@ -69,17 +76,45 @@ const patientSchema = new Schema(
         ref: "User",
       },
     ],
+    // appointments: [
+    //   {
+    //     appointment: {
+    //       type: Schema.Types.ObjectId,
+    //       ref: "Appointment",
+    //     },
+    //   },
+    // ],
   },
   {
     timestamps: true,
   }
 );
 
-//relationships
+//relacion con citas
 patientSchema.virtual("appointments", {
   ref: "Appointment",
   localField: "_id",
   foreignField: "patient",
 });
 
-export default model<IPatient, IPatientModel>("Patient", patientSchema);
+//a;ade appointment (cambiar despues)
+// patientSchema.methods.addAppointment = async function (appointment: any) {
+//   const patient = this;
+//   patient.appointments = patient.appointments.concat({ appointment });
+
+//   //await patient.save();
+// };
+
+// patientSchema.methods.setUser = async function (user: any) {
+// const patient = this;
+// patient.users = patient.users.concat(user._id);
+// console.log("patient.users", patient.users);
+// await patient.save();
+// };
+
+const Patient = model<IPatientDocument, IPatientModel>(
+  "Patient",
+  patientSchema
+);
+
+export default Patient;

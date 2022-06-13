@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
+import mongoose from "mongoose";
 import Appointment from "../model/Appointment";
 import Medic from "../model/Medic";
-import User from "../model/User";
+import Patient from "../model/Patient";
 
 const getAllAppointments = async (req: Request, res: Response) => {
   try {
@@ -28,39 +29,44 @@ const getAppointment = async (req: Request, res: Response) => {
 };
 
 const postAppointment = async (req: Request, res: Response) => {
-  const patient = await User.findById(req.params.idPatient);
+  const patient = await Patient.findById(req.params.idPatient);
   const medic = await Medic.findById(req.params.idMedic);
 
+  const { date } = req.body;
+
   const appointment = new Appointment({
-    ...req.body,
-    patient: patient,
-    medic: medic,
+    date,
+    patient,
+    medic,
   });
 
   try {
-    await appointment.save();
-    res.status(201).send(appointment);
+    const saved = await appointment.save();
+    return res.status(201).send(saved);
   } catch (error) {
-    res.status(400).send(error);
+    return res.status(400).send(error);
   }
 };
 
 //custom methods
-const getAppointmentsByUser = async (req: Request, res: Response) => {
-  try {
-    const appointments = await Appointment.findByPatient(
-      req.body.user._id.toString()
-    );
-    if (!appointments) return res.sendStatus(404);
-    res.send(appointments);
-  } catch (error) {
-    res.status(500).send(error);
-  }
+const getAppointmentsByPatient = async (req: Request, res: Response) => {
+  const appointments = await Appointment.find({
+    patient: new mongoose.Types.ObjectId(req.params.idPatient),
+  })
+    .populate({
+      path: "medic",
+      populate: {
+        path: "speciality",
+      },
+    })
+    .populate("patient");
+
+  return res.send(appointments);
 };
 
 export {
   getAllAppointments,
   postAppointment,
   getAppointment,
-  getAppointmentsByUser,
+  getAppointmentsByPatient,
 };
