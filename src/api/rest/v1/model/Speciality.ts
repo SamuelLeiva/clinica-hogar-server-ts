@@ -1,4 +1,9 @@
-import { Schema, model } from "mongoose";
+import { Schema, Document, model, Model } from "mongoose";
+
+export interface ISpeciality extends Document {
+  name?: string;
+  appointmentCost?: number;
+}
 
 const specialitySchema = new Schema(
   {
@@ -24,6 +29,6 @@ specialitySchema.virtual("medics", {
   foreignField: "speciality",
 });
 
-const Speciality = model("Speciality", specialitySchema);
+const Speciality: Model<ISpeciality> = model("Speciality", specialitySchema);
 
 export default Speciality;

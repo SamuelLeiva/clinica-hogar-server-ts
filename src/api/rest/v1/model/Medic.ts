@@ -1,6 +1,14 @@
-import { model, Schema } from "mongoose";
+import { model, Schema, Document, Model } from "mongoose";
 
-const medicSchema = new Schema(
+export interface IMedic extends Document {
+  firstName?: string;
+  lastNameF?: string;
+  lastNameM?: string;
+  schedule?: any;
+  speciality?: any;
+}
+
+const medicSchema: Schema = new Schema(
   {
     firstName: {
       type: String,
@@ -52,6 +60,6 @@ medicSchema.virtual("appointments", {
   foreignField: "medic",
 });
 
-const Medic = model("Medic", medicSchema);
+const Medic: Model<IMedic> = model("Medic", medicSchema);
 
 export default Medic;

@@ -6,7 +6,6 @@ const getMyUser = async (req: Request, res: Response) => {
 
   try {
     const patientDB = await Patient.findOne({ document: user.document });
-
     return res.send(patientDB);
   } catch (error) {
     return res.sendStatus(500);

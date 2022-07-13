@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
 import Patient from "../model/Patient";
-import User, { IUserDocument } from "../model/User";
+import User from "../model/User";
 
 const postPatient = async (req: Request, res: Response) => {
   const {
@@ -32,7 +32,7 @@ const postPatient = async (req: Request, res: Response) => {
 };
 
 const getPatientsByUser = async (req: Request, res: Response) => {
-  const user: IUserDocument = await req.body.user.populate({
+  const user = await req.body.user.populate({
     path: "patients",
     populate: { path: "appointments" },
   });
@@ -42,7 +42,7 @@ const getPatientsByUser = async (req: Request, res: Response) => {
 
 //add patient to user
 const addPatient = async (req: Request, res: Response) => {
-  const user: IUserDocument = req.body.user;
+  const user = req.body.user;
   //const idUser = new mongoose.Types.ObjectId(user._id);
   console.log("user", user);
   const {

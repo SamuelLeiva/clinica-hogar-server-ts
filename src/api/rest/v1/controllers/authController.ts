@@ -1,12 +1,11 @@
 import { Request, Response } from "express";
 import * as jwt from "jsonwebtoken";
+import * as bcrypt from "bcryptjs";
 
 import { generateAuthToken } from "../helpers";
 import Patient from "../model/Patient";
 
 import User from "../model/User";
-
-const NAMESPACE = "Auth Controller";
 
 //iniciar sesión
 const login = async (req: Request, res: Response) => {
@@ -17,8 +16,13 @@ const login = async (req: Request, res: Response) => {
       .status(400)
       .json({ message: "Username and password are required." });
 
-  const foundUser = await User.findByCredentials(email, password);
+  const foundUser = await User.findOne({ email });
+  console.log("foundUser", foundUser);
   if (!foundUser) return res.sendStatus(401); //Unauthorized
+
+  const isMatch = await bcrypt.compare(password, foundUser.password!);
+  console.log("isMatch", isMatch);
+  if (!isMatch) return res.sendStatus(401); //Unauthorized
 
   // create JWTs
   const accessToken = await generateAuthToken(foundUser, "access");
@@ -36,7 +40,7 @@ const login = async (req: Request, res: Response) => {
   });
 
   // Send authorization roles and access token to user
-  res.json({ result, accessToken });
+  return res.json({ result, accessToken });
 };
 
 //registrarse
