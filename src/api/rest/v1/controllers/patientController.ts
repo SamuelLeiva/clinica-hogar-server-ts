@@ -3,6 +3,34 @@ import mongoose from "mongoose";
 import Patient from "../model/Patient";
 import User, { IUserDocument } from "../model/User";
 
+const postPatient = async (req: Request, res: Response) => {
+  const {
+    firstName,
+    lastNameF,
+    lastNameM,
+    document,
+    sex,
+    documentType,
+    birthday,
+    phoneNumber,
+  } = req.body;
+
+  const patient = new Patient({
+    firstName,
+    lastNameF,
+    lastNameM,
+    document,
+    sex,
+    documentType,
+    birthday,
+    phoneNumber,
+  });
+
+  const patientDb = await patient.save();
+
+  res.send(patientDb);
+};
+
 const getPatientsByUser = async (req: Request, res: Response) => {
   const user: IUserDocument = await req.body.user.populate({
     path: "patients",
@@ -34,16 +62,28 @@ const addPatient = async (req: Request, res: Response) => {
     users: new mongoose.Types.ObjectId(user._id),
   });
   console.log("exactDuplicate", exactDuplicate);
+
+  //si ya existe el paciente conectado a ese mismo usuario
   if (exactDuplicate) return res.sendStatus(409); //Conflict
 
   const duplicate = await Patient.findOne({ document });
   console.log("duplicate", duplicate);
+
+  //si existe el paciente, mas no esta conectado a este usuario
   if (duplicate) {
-    //await duplicate.setUser(user._id);
-    //await duplicate.save();
-    //await user.setPatient(duplicate._id);
-    //await user.save();
-    return res.sendStatus(200); //conectados
+    //actualizar paciente
+    await Patient.updateOne(
+      { _id: duplicate._id },
+      { $push: { users: user._id } }
+    );
+
+    //actualizar usuario
+    await User.updateOne(
+      { _id: user._id },
+      { $push: { patients: duplicate._id } }
+    );
+
+    return res.send({ msg: "Paciente vinculado a usuario actual." }); //conectados
   }
 
   //crear paciente
@@ -75,4 +115,4 @@ const addPatient = async (req: Request, res: Response) => {
   return res.status(201).send(patientDb);
 };
 
-export { getPatientsByUser, addPatient };
+export { postPatient, getPatientsByUser, addPatient };

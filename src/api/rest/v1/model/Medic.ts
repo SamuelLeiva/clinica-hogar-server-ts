@@ -19,11 +19,16 @@ const medicSchema = new Schema(
     },
     schedule: [
       {
+        day: {
+          type: String,
+          required: true,
+          trim: true,
+        },
         hour: {
           type: String,
           required: true,
         },
-        ocuppied: {
+        occupied: {
           type: Boolean,
           required: true,
         },
