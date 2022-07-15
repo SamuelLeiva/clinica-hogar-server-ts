@@ -1,22 +1,13 @@
-import { model, Model, Schema } from "mongoose";
+import { model, Model, Schema, Document } from "mongoose";
 
-interface IAppointment {
+export interface IAppointment extends Document {
   date: Date;
   medic?: any;
   patient?: any;
   appointmentType?: string;
 }
 
-interface IAppointmentDocument extends IAppointment, Document {
-  //methods
-}
-
-interface IAppointmentModel extends Model<IAppointmentDocument> {
-  //statics
-  findByPatient: (id: string) => any;
-}
-
-const appointmentSchema: Schema<IAppointmentDocument> = new Schema(
+const appointmentSchema: Schema = new Schema(
   {
     date: {
       type: Date,
@@ -43,27 +34,9 @@ const appointmentSchema: Schema<IAppointmentDocument> = new Schema(
   }
 );
 
-appointmentSchema.static(
-  "findByPatient",
-  async function findByPatient(id: string) {
-    const appointments: any = await this.find({ patient: id }).populate({
-      path: "medic",
-      populate: { path: "speciality" },
-    });
-
-    console.log("appointments", appointments);
-
-    if (!appointments) {
-      return null;
-    }
-
-    return appointments;
-  }
-);
-
-const appointment = model<IAppointmentDocument, IAppointmentModel>(
+const Appointment: Model<IAppointment> = model(
   "Appointment",
   appointmentSchema
 );
 
-export default appointment;
+export default Appointment;

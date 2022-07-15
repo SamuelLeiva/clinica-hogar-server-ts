@@ -2,9 +2,10 @@ import express from "express";
 import {
   getAllAppointments,
   getAppointment,
-  getAppointmentsByPatient,
   postAppointment,
-} from "../controllers/appointmentController";
+  getAppointmentsByPatient,
+} from "../controllers";
+
 import { verifyJWT } from "../middlewares/verifyJWT";
 
 const router = express.Router();

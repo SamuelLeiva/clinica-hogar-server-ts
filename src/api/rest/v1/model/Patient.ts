@@ -1,8 +1,6 @@
 import { Schema, Document, model, Model } from "mongoose";
-import User from "./User";
-import mongoose from "mongoose";
 
-interface IPatient {
+export interface IPatient extends Document {
   firstName?: string;
   lastNameF?: string;
   lastNameM?: string;
@@ -16,18 +14,7 @@ interface IPatient {
   appointments?: Array<any>;
 }
 
-export interface IPatientDocument extends IPatient, Document {
-  //methods
-  addAppointment: (appointment: any) => Promise<void>;
-  setUser: (userId: string) => Promise<typeof Patient>;
-}
-
-interface IPatientModel extends Model<IPatientDocument> {
-  //statics
-  //addAppointment: (appointment: any) => Promise<void>;
-}
-
-const patientSchema: Schema<IPatientDocument> = new Schema(
+const patientSchema: Schema = new Schema(
   {
     firstName: {
       type: String,
@@ -77,14 +64,6 @@ const patientSchema: Schema<IPatientDocument> = new Schema(
         ref: "User",
       },
     ],
-    // appointments: [
-    //   {
-    //     appointment: {
-    //       type: Schema.Types.ObjectId,
-    //       ref: "Appointment",
-    //     },
-    //   },
-    // ],
   },
   {
     timestamps: true,
@@ -98,24 +77,6 @@ patientSchema.virtual("appointments", {
   foreignField: "patient",
 });
 
-//a;ade appointment (cambiar despues)
-// patientSchema.methods.addAppointment = async function (appointment: any) {
-//   const patient = this;
-//   patient.appointments = patient.appointments.concat({ appointment });
-
-//   //await patient.save();
-// };
-
-// patientSchema.methods.setUser = async function (user: any) {
-// const patient = this;
-// patient.users = patient.users.concat(user._id);
-// console.log("patient.users", patient.users);
-// await patient.save();
-// };
-
-const Patient = model<IPatientDocument, IPatientModel>(
-  "Patient",
-  patientSchema
-);
+const Patient: Model<IPatient> = model("Patient", patientSchema);
 
 export default Patient;
