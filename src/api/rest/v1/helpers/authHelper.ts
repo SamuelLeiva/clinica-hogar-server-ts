@@ -14,8 +14,6 @@ const generateAuthToken = async (user: any, tokenType: string) => {
     );
   }
 
-  console.log("tokenType", tokenType);
-
   return token;
 };
 

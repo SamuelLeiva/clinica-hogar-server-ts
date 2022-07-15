@@ -10,57 +10,64 @@ const getAllMedics = async (req: Request, res: Response) => {
     });
     res.send(medics);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
 const getMedic = async (req: Request, res: Response) => {
-  const _id = req.params.id;
   try {
+    const _id = req.params.id;
+
     const medic = await Medic.findOne({ _id });
 
     if (!medic) {
-      return res.status(404).send();
+      return res.status(404).json({ message: "Not found" });
     }
 
     res.send(medic);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
 const postMedic = async (req: Request, res: Response) => {
-  const medic = new Medic({
-    firstName: req.body.firstName,
-    lastNameF: req.body.lastNameF,
-    lastNameM: req.body.lastNameM,
-    speciality: req.params.speciality,
-  });
-
   try {
+    const { firstName, lastNameF, lastNameM, speciality } = req.body;
+    const medic = new Medic({
+      firstName,
+      lastNameF,
+      lastNameM,
+      speciality,
+    });
+
     await medic.save();
     res.status(201).send(medic);
   } catch (error) {
-    res.status(400).send(error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
 const putMedic = async (req: Request, res: Response) => {
-  const _id = req.params.id;
   try {
+    const _id = req.params.id;
+
+    const { firstName, lastNameF, lastNameM, schedule } = req.body;
+
     const medic = await Medic.findOneAndUpdate(
       { _id },
       {
-        firstName: req.body.firstName,
-        lastNameF: req.body.lastNameF,
-        lastNameM: req.body.lastNameM,
-        schedule: req.body.schedule,
+        firstName,
+        lastNameF,
+        lastNameM,
+        schedule,
       }
     );
 
-    res.send(medic.schedule);
+    if (!medic) return res.status(404).json({ message: "Not found" });
+
+    res.status(201).send(medic);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -73,7 +80,7 @@ const getMedicsBySpeciality = async (req: Request, res: Response) => {
 
     res.send(medics);
   } catch (error) {
-    res.status(500).send();
+    res.status(500).json({ message: "Server error" });
   }
 };
 

@@ -6,35 +6,36 @@ const getAllSpecialities = async (req: Request, res: Response) => {
     const specialities = await Speciality.find();
     res.send(specialities);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
 const getSpeciality = async (req: Request, res: Response) => {
-  const _id = req.params.id;
   try {
+    const _id = req.params.id;
+
     const speciality = await Speciality.findOne({ _id });
 
     if (!speciality) {
-      return res.status(404).send();
+      return res.status(404).json({ message: "Not found" });
     }
 
-    return res.send(speciality);
+    res.send(speciality);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
 const postSpeciality = async (req: Request, res: Response) => {
-  const speciality = new Speciality({
-    ...req.body,
-  });
-
   try {
+    const speciality = new Speciality({
+      ...req.body,
+    });
+
     await speciality.save();
-    res.status(201).send(speciality);
+    res.status(201).json({ message: "Speciality created", speciality });
   } catch (error) {
-    res.status(400).send(error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 

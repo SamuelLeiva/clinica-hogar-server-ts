@@ -3,75 +3,81 @@ import * as jwt from "jsonwebtoken";
 import * as bcrypt from "bcryptjs";
 
 import { generateAuthToken } from "../helpers";
-import Patient from "../model/Patient";
 
+import Patient from "../model/Patient";
 import User from "../model/User";
 
 //iniciar sesión
 const login = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  if (!email || !password)
-    return res
-      .status(400)
-      .json({ message: "Username and password are required." });
+    //trasladarlo a express validator despues
+    if (!email || !password)
+      return res
+        .status(400)
+        .json({ message: "Username and password are required." });
 
-  const foundUser = await User.findOne({ email });
-  console.log("foundUser", foundUser);
-  if (!foundUser) return res.sendStatus(401); //Unauthorized
+    const foundUser = await User.findOne({ email });
+    console.log("foundUser", foundUser);
+    if (!foundUser) return res.status(401).json({ message: "Unauthorized" }); //Unauthorized
 
-  const isMatch = await bcrypt.compare(password, foundUser.password!);
-  console.log("isMatch", isMatch);
-  if (!isMatch) return res.sendStatus(401); //Unauthorized
+    const isMatch = await bcrypt.compare(password, foundUser.password!);
+    console.log("isMatch", isMatch);
+    if (!isMatch) return res.status(401).json({ message: "Unauthorized" }); //Unauthorized
 
-  // create JWTs
-  const accessToken = await generateAuthToken(foundUser, "access");
-  const refreshToken = await generateAuthToken(foundUser, "refresh");
+    // create JWTs
+    const accessToken = await generateAuthToken(foundUser, "access");
+    const refreshToken = await generateAuthToken(foundUser, "refresh");
 
-  foundUser.refreshToken = refreshToken;
-  const result = await foundUser.save();
+    foundUser.refreshToken = refreshToken;
+    const result = await foundUser.save();
 
-  // Creates Secure Cookie with refresh token
-  res.cookie("jwt", refreshToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    maxAge: 24 * 60 * 60 * 1000,
-  });
+    // Creates Secure Cookie with refresh token
+    res.cookie("jwt", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
 
-  // Send authorization roles and access token to user
-  return res.json({ result, accessToken });
+    // Send authorization roles and access token to user
+    return res.json({ result, accessToken });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error" });
+  }
 };
 
 //registrarse
 const register = async (req: Request, res: Response) => {
-  //destructurar
-  const {
-    email,
-    password,
-    firstName,
-    lastNameF,
-    lastNameM,
-    document,
-    sex,
-    documentType,
-    birthday,
-    phoneNumber,
-  } = req.body;
-
-  if (!email || !password)
-    return res
-      .status(400)
-      .json({ message: "Username and password are required." });
-
-  const duplicate = await User.findOne({ email });
-  if (duplicate) return res.sendStatus(409); //Conflict
-
-  const duplicatePatient = await Patient.findOne({ document });
-
-  let user;
-  let userDB;
   try {
+    //destructurar
+    const {
+      email,
+      password,
+      firstName,
+      lastNameF,
+      lastNameM,
+      document,
+      sex,
+      documentType,
+      birthday,
+      phoneNumber,
+    } = req.body;
+
+    if (!email || !password)
+      return res
+        .status(400)
+        .json({ message: "Username and password are required." });
+
+    const duplicate = await User.findOne({ email });
+    if (duplicate) return res.status(409).json({ message: "Conflict" }); //Conflict
+
+    const duplicatePatient = await Patient.findOne({ document });
+
+    let user;
+    let userDB;
+
     if (duplicatePatient) {
       //conectamos al paciente y creamos
       user = new User({
@@ -116,56 +122,59 @@ const register = async (req: Request, res: Response) => {
         { $push: { users: userDB._id } }
       );
     }
-    return res.status(201).send(userDB);
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+    return res
+      .status(201)
+      .send({ message: "Register succesful", user: userDB });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
   }
 };
 
 //refresh token
 const refresh = async (req: Request, res: Response) => {
-  const cookies = req.cookies;
-
-  console.log("cookies", cookies);
-
-  if (!cookies?.jwt) return res.sendStatus(401);
-  const refreshToken = cookies.jwt;
-
-  const foundUser = await User.findOne({ refreshToken });
-
-  if (!foundUser) return res.sendStatus(403); //Forbidden
-
-  // evaluate refresh jwt
-  let decoded: any;
-
   try {
+    const cookies = req.cookies;
+
+    console.log("cookies", cookies);
+
+    if (!cookies?.jwt) return res.status(401).json({ message: "Unauthorized" });
+    const refreshToken = cookies.jwt;
+
+    const foundUser = await User.findOne({ refreshToken });
+
+    if (!foundUser) return res.status(403).json({ message: "Forbidden" }); //Forbidden
+
+    // evaluate refresh jwt
+    let decoded: any;
+
     decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_TOKEN_SECRET!);
+
+    if (foundUser._id.toString() !== decoded._id)
+      return res.status(403).json({ message: "Unauthorized" }); //Unauthorized
+
+    const accessToken = await generateAuthToken(foundUser, "access");
+
+    res.json({ foundUser, accessToken });
   } catch (error) {
-    return res.sendStatus(403);
+    res.status(500).json({ message: "Server error" });
   }
-
-  if (foundUser._id.toString() !== decoded._id) return res.sendStatus(403); //Unauthorized
-
-  const accessToken = await generateAuthToken(foundUser, "access");
-
-  res.json({ foundUser, accessToken });
 };
 
 const logout = async (req: Request, res: Response) => {
   // On client, also delete the accessToken
   const cookies = req.cookies;
   console.log("cookies", cookies);
-  if (!cookies?.jwt) return res.sendStatus(204); //No content
+  if (!cookies?.jwt) return res.status(204).json({ message: "No content" }); //No content
   const refreshToken = cookies.jwt;
 
   // Is refreshToken in db?
-  const foundUser: any = await User.findOne({ refreshToken });
+  const foundUser = await User.findOne({ refreshToken });
 
   console.log("foundUser", foundUser);
 
   if (!foundUser) {
     res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true });
-    return res.sendStatus(204);
+    return res.status(204).json({ message: "No content" });
   }
 
   // Delete refreshToken in db
@@ -175,7 +184,7 @@ const logout = async (req: Request, res: Response) => {
 
   res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true });
   //res.send({ messge: "Cleaned cookie." }).status(204);
-  res.sendStatus(204);
+  res.status(204).json({ message: "Logged out" });
   //console.log(res.status);
 };
 
@@ -183,9 +192,9 @@ const logoutAll = async (req: Request, res: Response) => {
   try {
     req.body.user.tokens = [];
     await req.body.user.save();
-    res.send({ msg: "Success in logging out all." });
+    res.json({ message: "Success in logging out all." });
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
