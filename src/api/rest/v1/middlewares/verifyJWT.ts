@@ -13,11 +13,17 @@ const verifyJWT = async (req: Request, res: Response, next: NextFunction) => {
 
     const token: string = authHeader.replace("Bearer ", "");
 
+    console.log("token", token);
+
     let decoded: any;
 
-    decoded = jwt.verify(token, process.env.JWT_SECRET!);
-    //console.log("decoded", decoded);
-    if (!decoded) return res.sendStatus(403);
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET!);
+    } catch (error) {
+      return res.status(401).json({ message: "Unauthorized. Token expired" });
+    }
+
+    console.log("decoded", decoded);
 
     const user = await User.findOne({
       _id: decoded._id,

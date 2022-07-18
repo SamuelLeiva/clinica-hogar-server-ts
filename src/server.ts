@@ -1,5 +1,5 @@
 import http from "http";
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 
 import logging from "./config/logging";
@@ -24,7 +24,7 @@ const router = express();
 startConnection();
 
 /** Logger */
-router.use((req, res, next) => {
+router.use((req: Request, res: Response, next: NextFunction) => {
   /** Log the req */
   logging.info(
     NAMESPACE,
@@ -43,7 +43,7 @@ router.use((req, res, next) => {
 });
 
 //use credentials
-router.use((req, res, next) => {
+router.use((req: Request, res: Response, next: NextFunction) => {
   const origin = req.headers.origin!;
   if (allowedOrigins.includes(origin)) {
     res.header("Access-Control-Allow-Credentials", "true");
@@ -60,6 +60,15 @@ router.use(express.json());
 
 /** Cookies Middleware */
 router.use(cookieParser());
+
+/** Show express-validator errors middleware */
+// router.use((req: Request, res: Response, next: NextFunction) => {
+//   const errors = validationResult(req);
+//   if (!errors.isEmpty()) {
+//     return res.status(400).json({ errors: errors.array() });
+//   }
+//   next();
+// });
 
 /** Routes */
 router.use("/api/v1/auth", authRoutes);

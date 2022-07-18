@@ -6,14 +6,19 @@ import {
   postMedic,
   putMedic,
 } from "../controllers";
+import { showErrors } from "../helpers";
+import {
+  postMedicValidations,
+  putMedicValidations,
+} from "../validators/medicValidations";
 
 const router = express.Router();
 
 router.get("/", getAllMedics);
 router.get("/:id", getMedic);
-router.put("/:id", putMedic);
+router.put("/:id", ...putMedicValidations, showErrors, putMedic);
 
-router.post("/:speciality", postMedic);
+router.post("/:speciality", ...postMedicValidations, showErrors, postMedic);
 
 router.get("/speciality/:idEsp", getMedicsBySpeciality);
 

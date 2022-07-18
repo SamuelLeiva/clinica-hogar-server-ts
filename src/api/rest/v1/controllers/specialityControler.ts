@@ -27,9 +27,11 @@ const getSpeciality = async (req: Request, res: Response) => {
 };
 
 const postSpeciality = async (req: Request, res: Response) => {
+  const { name, appointmentCost } = req.body;
   try {
     const speciality = new Speciality({
-      ...req.body,
+      name,
+      appointmentCost,
     });
 
     await speciality.save();

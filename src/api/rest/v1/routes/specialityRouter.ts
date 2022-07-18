@@ -4,11 +4,13 @@ import {
   getSpeciality,
   postSpeciality,
 } from "../controllers";
+import { showErrors } from "../helpers";
+import { specialityValidations } from "../validators/specialityValidations";
 
 const router = express.Router();
 
 router.get("/", getAllSpecialities);
 router.get("/:id", getSpeciality);
-router.post("/", postSpeciality);
+router.post("/", ...specialityValidations, showErrors, postSpeciality);
 
 export default router;
