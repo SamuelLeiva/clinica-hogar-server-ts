@@ -19,11 +19,11 @@ const login = async (req: Request, res: Response) => {
         .json({ message: "Username and password are required." });
 
     const foundUser = await User.findOne({ email });
-    console.log("foundUser", foundUser);
+
     if (!foundUser) return res.status(401).json({ message: "Unauthorized" }); //Unauthorized
 
     const isMatch = await bcrypt.compare(password, foundUser.password!);
-    console.log("isMatch", isMatch);
+
     if (!isMatch) return res.status(401).json({ message: "Unauthorized" }); //Unauthorized
 
     // create JWTs
@@ -132,45 +132,41 @@ const register = async (req: Request, res: Response) => {
 
 //refresh token
 const refresh = async (req: Request, res: Response) => {
-  try {
-    const cookies = req.cookies;
+  // try {
+  const cookies = req.cookies;
 
-    console.log("cookies", cookies);
+  if (!cookies?.jwt) return res.status(401).json({ message: "Unauthorized" });
+  const refreshToken = cookies.jwt;
 
-    if (!cookies?.jwt) return res.status(401).json({ message: "Unauthorized" });
-    const refreshToken = cookies.jwt;
+  const foundUser = await User.findOne({ refreshToken: refreshToken });
 
-    const foundUser = await User.findOne({ refreshToken });
+  if (!foundUser) return res.status(403).json({ message: "Forbidden" }); //Forbidden
 
-    if (!foundUser) return res.status(403).json({ message: "Forbidden" }); //Forbidden
+  // evaluate refresh jwt
+  let decoded: any;
 
-    // evaluate refresh jwt
-    let decoded: any;
+  decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_TOKEN_SECRET!);
 
-    decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_TOKEN_SECRET!);
+  if (foundUser._id.toString() !== decoded._id)
+    return res.status(403).json({ message: "Unauthorized" }); //Unauthorized
 
-    if (foundUser._id.toString() !== decoded._id)
-      return res.status(403).json({ message: "Unauthorized" }); //Unauthorized
+  const accessToken = await generateAuthToken(foundUser, "access");
 
-    const accessToken = await generateAuthToken(foundUser, "access");
-
-    res.json({ foundUser, accessToken });
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
+  res.json({ foundUser, accessToken });
+  // } catch (error) {
+  //   res.status(500).json({ message: "Server error" });
+  // }
 };
 
 const logout = async (req: Request, res: Response) => {
   // On client, also delete the accessToken
   const cookies = req.cookies;
-  console.log("cookies", cookies);
+
   if (!cookies?.jwt) return res.status(204).json({ message: "No content" }); //No content
   const refreshToken = cookies.jwt;
 
   // Is refreshToken in db?
   const foundUser = await User.findOne({ refreshToken });
-
-  console.log("foundUser", foundUser);
 
   if (!foundUser) {
     res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true });
@@ -180,12 +176,10 @@ const logout = async (req: Request, res: Response) => {
   // Delete refreshToken in db
   foundUser.refreshToken = "";
   const result = await foundUser.save();
-  console.log(result);
 
   res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true });
   //res.send({ messge: "Cleaned cookie." }).status(204);
   res.status(204).json({ message: "Logged out" });
-  //console.log(res.status);
 };
 
 const logoutAll = async (req: Request, res: Response) => {

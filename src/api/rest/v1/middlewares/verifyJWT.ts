@@ -6,7 +6,6 @@ const verifyJWT = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const authHeader =
       req.header("authorization") || req.header("Authorization");
-    console.log("authHeader", authHeader);
 
     if (!authHeader?.startsWith("Bearer "))
       return res.status(401).json({ message: "Unauthorized" });
@@ -15,9 +14,11 @@ const verifyJWT = async (req: Request, res: Response, next: NextFunction) => {
 
     let decoded: any;
 
-    decoded = jwt.verify(token, process.env.JWT_SECRET!);
-    //console.log("decoded", decoded);
-    if (!decoded) return res.sendStatus(403);
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET!);
+    } catch (error) {
+      return res.sendStatus(403);
+    }
 
     const user = await User.findOne({
       _id: decoded._id,

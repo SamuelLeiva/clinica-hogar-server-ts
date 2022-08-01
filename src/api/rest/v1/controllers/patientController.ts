@@ -69,13 +69,11 @@ const addPatient = async (req: Request, res: Response) => {
       document,
       users: new mongoose.Types.ObjectId(user._id),
     });
-    console.log("exactDuplicate", exactDuplicate);
 
     //si ya existe el paciente conectado a ese mismo usuario
     if (exactDuplicate) return res.status(409).json({ message: "Conflict" }); //Conflict
 
     const duplicate = await Patient.findOne({ document });
-    console.log("duplicate", duplicate);
 
     //si existe el paciente, mas no esta conectado a este usuario
     if (duplicate) {
