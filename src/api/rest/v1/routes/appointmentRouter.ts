@@ -12,7 +12,7 @@ const router = express.Router();
 
 router.get("/", getAllAppointments);
 router.get("/:id", getAppointment);
-router.post("/patient/:idPatient/medic/:idMedic", verifyJWT, postAppointment);
+router.post("/patient/:idPatient/medic/:idMedic", postAppointment);
 
 router.get("/patient/:idPatient", verifyJWT, getAppointmentsByPatient);
 
