@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Medic from "../model/Medic";
+import Medic from "../models/medic.schema";
 
 const getAllMedics = async (req: Request, res: Response) => {
   try {

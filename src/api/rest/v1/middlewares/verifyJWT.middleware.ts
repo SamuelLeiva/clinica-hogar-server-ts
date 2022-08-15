@@ -1,6 +1,6 @@
 import * as jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import User from "../model/User";
+import User from "../models/user.schema";
 
 const verifyJWT = async (req: Request, res: Response, next: NextFunction) => {
   try {

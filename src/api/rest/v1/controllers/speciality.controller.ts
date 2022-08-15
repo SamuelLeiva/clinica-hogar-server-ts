@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Speciality from "../model/Speciality";
+import Speciality from "../models/speciality.schema";
 
 const getAllSpecialities = async (req: Request, res: Response) => {
   try {

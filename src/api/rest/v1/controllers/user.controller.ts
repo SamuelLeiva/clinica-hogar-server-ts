@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Patient from "../model/Patient";
+import Patient from "../models/patient.schema";
 
 const getMyUser = async (req: Request, res: Response) => {
   try {

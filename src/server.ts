@@ -14,7 +14,7 @@ import {
 } from "./api/rest/v1/routes";
 import { startConnection } from "./config/database";
 import cookieParser from "cookie-parser";
-import { corsOptions } from "./config/corsOptions";
+import { corsOptions } from "./config/cors";
 import { allowedOrigins } from "./config/constants/allowedOrigins";
 
 const NAMESPACE = "Server";

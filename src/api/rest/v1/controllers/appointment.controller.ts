@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
-import Appointment from "../model/Appointment";
-import Medic from "../model/Medic";
-import Patient from "../model/Patient";
+import Appointment from "../models/appointment.schema";
+import Medic from "../models/medic.schema";
+import Patient from "../models/patient.schema";
 
 const getAllAppointments = async (req: Request, res: Response) => {
   try {

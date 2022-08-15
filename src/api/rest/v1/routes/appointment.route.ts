@@ -6,7 +6,7 @@ import {
   getAppointmentsByPatient,
 } from "../controllers";
 
-import { verifyJWT } from "../middlewares/verifyJWT";
+import { verifyJWT } from "../middlewares/verifyJWT.middleware";
 
 const router = express.Router();
 

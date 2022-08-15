@@ -4,8 +4,8 @@ import * as bcrypt from "bcryptjs";
 
 import { generateAuthToken } from "../helpers";
 
-import Patient from "../model/Patient";
-import User from "../model/User";
+import Patient from "../models/patient.schema";
+import User from "../models/user.schema";
 
 //iniciar sesión
 const login = async (req: Request, res: Response) => {
