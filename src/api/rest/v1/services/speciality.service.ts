@@ -1,8 +1,8 @@
 import { Speciality } from "../models";
 
-const getAllSpecialities = async () => {
+const findAllSpecialities = async () => {
   const allSpecialities = await Speciality.find();
   return allSpecialities;
 };
 
-export { getAllSpecialities };
+export { findAllSpecialities };

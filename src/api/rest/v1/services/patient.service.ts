@@ -1,6 +1,6 @@
 import { Patient } from "../models";
 
-const getAllPatients = async () => {
+const findAllPatients = async () => {
   const allPatients = await Patient.find();
   return allPatients;
 };
@@ -10,4 +10,4 @@ const findPatient = async (props: any) => {
   return patient;
 };
 
-export { getAllPatients, findPatient };
+export { findAllPatients, findPatient };

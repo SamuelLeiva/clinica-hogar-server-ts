@@ -1,6 +1,6 @@
 import { User } from "../models";
 
-const getAllUsers = async () => {
+const findAllUsers = async () => {
   const allUsers = await User.find();
   return allUsers;
 };
@@ -12,4 +12,4 @@ const findUser = async (props: any) => {
   return user;
 };
 
-export { getAllUsers, findUser };
+export { findAllUsers, findUser };
