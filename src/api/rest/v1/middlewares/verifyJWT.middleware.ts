@@ -1,6 +1,7 @@
 import * as jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import User from "../models/user.schema";
+import { findUser } from "../services";
 
 const verifyJWT = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -20,10 +21,14 @@ const verifyJWT = async (req: Request, res: Response, next: NextFunction) => {
       return res.sendStatus(403);
     }
 
-    const user = await User.findOne({
+    const user = await findUser({
       _id: decoded._id,
-      //aca buscar por roles cuando se agregue roles al app (ver auth con dave)
     });
+
+    // const user = await User.findOne({
+    //   _id: decoded._id,
+    //   //aca buscar por roles cuando se agregue roles al app (ver auth con dave)
+    // });
 
     if (!user) return res.status(401).json({ message: "Unauthorized" });
 

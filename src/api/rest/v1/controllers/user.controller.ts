@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
-import Patient from "../models/patient.schema";
+import { findPatient } from "../services";
 
 const getMyUser = async (req: Request, res: Response) => {
   try {
     const user = req.body.user;
-    const patientDB = await Patient.findOne({ document: user.document });
+    const patientDB = await findPatient({ document: user.document });
+    //const patientDB = await Patient.findOne({ document: user.document });
     if (!patientDB) return res.status(404).json({ message: "Not found" });
     return res.send(patientDB);
   } catch (error) {
