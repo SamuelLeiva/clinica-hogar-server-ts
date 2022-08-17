@@ -10,4 +10,16 @@ const findPatient = async (props: any) => {
   return patient;
 };
 
-export { findAllPatients, findPatient };
+const savePatient = async (props: any) => {
+  const patient = new Patient({
+    ...props,
+  });
+  const patientDB = await patient.save();
+  return patientDB;
+};
+
+const updatePatientUser = async (idPatient: string, idUser: string) => {
+  await Patient.updateOne({ _id: idPatient }, { $push: { users: idUser } });
+};
+
+export { findAllPatients, findPatient, savePatient, updatePatientUser };

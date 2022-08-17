@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import Medic from "../models/medic.schema";
 import {
   findAllMedics,
   findMedic,

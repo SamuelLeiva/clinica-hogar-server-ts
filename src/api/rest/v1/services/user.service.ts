@@ -12,4 +12,8 @@ const findUser = async (props: any) => {
   return user;
 };
 
-export { findAllUsers, findUser };
+const updateUserPatient = async (idUser: string, idPatient: string) => {
+  await User.updateOne({ _id: idUser }, { $push: { patients: idPatient } });
+};
+
+export { findAllUsers, findUser, updateUserPatient };
