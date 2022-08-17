@@ -10,11 +10,10 @@ import {
 const router = express.Router();
 
 router.get("/", getAllMedics);
+router.post("/", postMedic);
 router.get("/:id", getMedic);
 router.put("/:id", putMedic);
 
-router.post("/:speciality", postMedic);
-
-router.get("/speciality/:idEsp", getMedicsBySpeciality);
+router.get("/speciality/:idSpe", getMedicsBySpeciality);
 
 export default router;
