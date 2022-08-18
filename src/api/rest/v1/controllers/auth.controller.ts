@@ -4,8 +4,6 @@ import * as bcrypt from "bcryptjs";
 
 import { generateAuthToken } from "../helpers";
 
-import Patient from "../models/patient.schema";
-import User from "../models/user.schema";
 import {
   findPatient,
   findUser,
