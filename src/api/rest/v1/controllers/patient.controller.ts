@@ -69,47 +69,22 @@ const addPatient = async (req: Request, res: Response) => {
 
     //si el paciente ya existe
     const exactDuplicate = await findPatient({ document, users: user._id });
-    // const exactDuplicate = await Patient.findOne({
-    //   document,
-    //   users: new mongoose.Types.ObjectId(user._id),
-    // });
 
     //si ya existe el paciente conectado a ese mismo usuario
     if (exactDuplicate) return res.status(409).json({ message: "Conflict" }); //Conflict
 
     const duplicate = await findPatient({ document });
-    //const duplicate = await Patient.findOne({ document });
 
     //si existe el paciente, mas no esta conectado a este usuario
     if (duplicate) {
       //actualizar paciente
       await updatePatientUser(duplicate._id, user._id);
-      // await Patient.updateOne(
-      //   { _id: duplicate._id },
-      //   { $push: { users: user._id } }
-      // );
 
       //actualizar usuario
       await updateUserPatient(user._id, duplicate._id);
-      // await User.updateOne(
-      //   { _id: user._id },
-      //   { $push: { patients: duplicate._id } }
-      // );
 
       return res.send({ message: "Patient linked to actual user." }); //conectados
     }
-
-    //crear paciente
-    // const patient = new Patient({
-    //   firstName,
-    //   lastNameF,
-    //   lastNameM,
-    //   document,
-    //   sex,
-    //   documentType,
-    //   birthday,
-    //   phoneNumber,
-    // });
 
     const patientDb = await savePatient({
       firstName,
@@ -124,17 +99,9 @@ const addPatient = async (req: Request, res: Response) => {
 
     //actualizar usuario
     await updateUserPatient(user._id, patientDb._id);
-    // await User.updateOne(
-    //   { _id: user._id },
-    //   { $push: { patients: patientDb._id } }
-    // );
 
     //actualizar paciente
     await updatePatientUser(patientDb._id, user._id);
-    // await Patient.updateOne(
-    //   { _id: patientDb._id },
-    //   { $push: { users: user._id } }
-    // );
 
     res.status(201).json({ message: "Created and added patient to this user" });
   } catch (error) {

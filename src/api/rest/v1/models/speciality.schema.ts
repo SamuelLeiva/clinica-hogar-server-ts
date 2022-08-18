@@ -22,7 +22,6 @@ const specialitySchema = new Schema(
   }
 );
 
-//relationships
 specialitySchema.virtual("medics", {
   ref: "Medic",
   localField: "_id",

@@ -48,9 +48,7 @@ const userSchema: Schema = new Schema(
   }
 );
 
-//hides private info in the responses
 userSchema.methods.toJSON = function (this: IUser) {
-  //IUserDocument
   const user = this;
   const userObject = user.toObject();
 

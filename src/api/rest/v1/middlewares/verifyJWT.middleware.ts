@@ -25,11 +25,6 @@ const verifyJWT = async (req: Request, res: Response, next: NextFunction) => {
       _id: decoded._id,
     });
 
-    // const user = await User.findOne({
-    //   _id: decoded._id,
-    //   //aca buscar por roles cuando se agregue roles al app (ver auth con dave)
-    // });
-
     if (!user) return res.status(401).json({ message: "Unauthorized" });
 
     req.body.user = user;

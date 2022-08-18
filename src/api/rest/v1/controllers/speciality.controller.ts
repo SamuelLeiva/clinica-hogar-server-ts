@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import Speciality from "../models/speciality.schema";
 import {
   findAllSpecialities,
   findSpeciality,
@@ -35,11 +34,6 @@ const postSpeciality = async (req: Request, res: Response) => {
   try {
     const { name, appointmentCost } = req.body;
     const speciality = await saveSpeciality({ name, appointmentCost });
-    // const speciality = new Speciality({
-    //   ...req.body,
-    // });
-
-    // await speciality.save();
     res.status(201).json({ message: "Speciality created", speciality });
   } catch (error) {
     res.status(500).json({ message: "Server error" });

@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import mongoose from "mongoose";
-import Appointment from "../models/appointment.schema";
+
 import {
   findAllAppointments,
   findAppointment,
@@ -51,15 +50,6 @@ const postAppointment = async (req: Request, res: Response) => {
       patient,
       medic,
     });
-
-    // const appointment = new Appointment({
-    //   date,
-    //   appointmentType,
-    //   patient,
-    //   medic,
-    // });
-
-    // const saved = await appointment.save();
 
     return res.status(201).send(saved);
   } catch (error) {
