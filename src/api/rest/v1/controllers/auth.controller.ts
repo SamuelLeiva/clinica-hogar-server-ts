@@ -4,8 +4,14 @@ import * as bcrypt from "bcryptjs";
 
 import { generateAuthToken } from "../helpers";
 
-import Patient from "../model/Patient";
-import User from "../model/User";
+import {
+  findPatient,
+  findUser,
+  savePatient,
+  saveUser,
+  updatePatientUser,
+  updateUser,
+} from "../services";
 
 //iniciar sesión
 const login = async (req: Request, res: Response) => {
@@ -18,7 +24,7 @@ const login = async (req: Request, res: Response) => {
         .status(400)
         .json({ message: "Username and password are required." });
 
-    const foundUser = await User.findOne({ email });
+    const foundUser = await findUser({ email });
 
     if (!foundUser) return res.status(401).json({ message: "Unauthorized" }); //Unauthorized
 
@@ -70,32 +76,28 @@ const register = async (req: Request, res: Response) => {
         .status(400)
         .json({ message: "Username and password are required." });
 
-    const duplicate = await User.findOne({ email });
+    const duplicate = await findUser({ email });
     if (duplicate) return res.status(409).json({ message: "Conflict" }); //Conflict
 
-    const duplicatePatient = await Patient.findOne({ document });
+    const duplicatePatient = await findPatient({ document });
 
-    let user;
+    //let user;
     let userDB;
 
     if (duplicatePatient) {
-      //conectamos al paciente y creamos
-      user = new User({
+      //creamos el user y lo conectamos con el paciente con sus datos
+      userDB = await saveUser({
         email,
         password,
         document,
         patients: [duplicatePatient._id],
       });
-      const userDB = await user.save();
 
       //actualizamos el paciente
-      await Patient.updateOne(
-        { _id: duplicatePatient._id },
-        { $push: { users: userDB._id } }
-      );
+      await updatePatientUser(duplicatePatient._id, userDB._id);
     } else {
       //creamos el paciente
-      const patient = new Patient({
+      const patientDB = await savePatient({
         firstName,
         lastNameF,
         lastNameM,
@@ -106,21 +108,15 @@ const register = async (req: Request, res: Response) => {
         phoneNumber,
       });
 
-      const patientDB = await patient.save();
-
-      user = new User({
+      userDB = await saveUser({
         email,
         password,
         document,
         patients: [patientDB._id],
       });
-      userDB = await user.save();
 
       //actualizamos el paciente
-      await Patient.updateOne(
-        { _id: patientDB._id },
-        { $push: { users: userDB._id } }
-      );
+      await updatePatientUser(patientDB._id, userDB._id);
     }
     return res
       .status(201)
@@ -132,13 +128,12 @@ const register = async (req: Request, res: Response) => {
 
 //refresh token
 const refresh = async (req: Request, res: Response) => {
-  // try {
   const cookies = req.cookies;
 
   if (!cookies?.jwt) return res.status(401).json({ message: "Unauthorized" });
   const refreshToken = cookies.jwt;
 
-  const foundUser = await User.findOne({ refreshToken: refreshToken });
+  const foundUser = await findUser({ refreshToken });
 
   if (!foundUser) return res.status(403).json({ message: "Forbidden" }); //Forbidden
 
@@ -153,11 +148,9 @@ const refresh = async (req: Request, res: Response) => {
   const accessToken = await generateAuthToken(foundUser, "access");
 
   res.json({ foundUser, accessToken });
-  // } catch (error) {
-  //   res.status(500).json({ message: "Server error" });
-  // }
 };
 
+//TODO: verificar que funcione el logout desde postman. Configurar cookies en postman
 const logout = async (req: Request, res: Response) => {
   // On client, also delete the accessToken
   const cookies = req.cookies;
@@ -166,7 +159,7 @@ const logout = async (req: Request, res: Response) => {
   const refreshToken = cookies.jwt;
 
   // Is refreshToken in db?
-  const foundUser = await User.findOne({ refreshToken });
+  const foundUser = await findUser({ refreshToken });
 
   if (!foundUser) {
     res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true });
@@ -174,14 +167,12 @@ const logout = async (req: Request, res: Response) => {
   }
 
   // Delete refreshToken in db
-  foundUser.refreshToken = "";
-  const result = await foundUser.save();
-
+  const result = await updateUser(foundUser._id, { refreshToken: "" });
   res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true });
-  //res.send({ messge: "Cleaned cookie." }).status(204);
   res.status(204).json({ message: "Logged out" });
 };
 
+//TODO: ver si conservar o quitar
 const logoutAll = async (req: Request, res: Response) => {
   try {
     req.body.user.tokens = [];

@@ -1,6 +1,7 @@
 import http from "http";
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 import logging from "./config/logging";
 import config from "./config/config";
@@ -13,8 +14,8 @@ import {
   userRoutes,
 } from "./api/rest/v1/routes";
 import { startConnection } from "./config/database";
-import cookieParser from "cookie-parser";
-import { corsOptions } from "./config/corsOptions";
+
+import { corsOptions } from "./config/cors";
 import { allowedOrigins } from "./config/constants/allowedOrigins";
 
 const NAMESPACE = "Server";

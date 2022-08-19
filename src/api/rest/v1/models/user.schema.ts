@@ -1,9 +1,8 @@
 import { Schema, Document, model, Model } from "mongoose";
 
 import * as bcrypt from "bcryptjs";
-import validator from "validator";
 
-export interface IUser extends Document {
+declare interface IUser extends Document {
   email?: string;
   password?: string;
   refreshToken?: string;
@@ -20,11 +19,6 @@ const userSchema: Schema = new Schema(
       unique: true,
       lowercase: true,
       trim: true,
-      validate(value: string) {
-        if (!validator.isEmail(value)) {
-          throw new Error("Email is invalid");
-        }
-      },
     },
     password: {
       type: String,
@@ -54,9 +48,7 @@ const userSchema: Schema = new Schema(
   }
 );
 
-//hides private info in the responses
 userSchema.methods.toJSON = function (this: IUser) {
-  //IUserDocument
   const user = this;
   const userObject = user.toObject();
 

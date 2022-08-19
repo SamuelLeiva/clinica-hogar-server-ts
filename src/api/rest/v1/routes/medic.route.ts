@@ -6,15 +6,15 @@ import {
   postMedic,
   putMedic,
 } from "../controllers";
+import { validateCreateMedic, validateUpdateMedic } from "../validations";
 
 const router = express.Router();
 
 router.get("/", getAllMedics);
+router.post("/", validateCreateMedic, postMedic);
 router.get("/:id", getMedic);
-router.put("/:id", putMedic);
+router.put("/:id", validateUpdateMedic, putMedic);
 
-router.post("/:speciality", postMedic);
-
-router.get("/speciality/:idEsp", getMedicsBySpeciality);
+router.get("/speciality/:idSpe", getMedicsBySpeciality);
 
 export default router;

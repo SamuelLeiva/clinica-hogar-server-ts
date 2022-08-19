@@ -1,10 +1,17 @@
 import { Request, Response } from "express";
-import Medic from "../model/Medic";
+import {
+  findAllMedics,
+  findMedic,
+  findMedicsBySpeciality,
+  saveMedic,
+  updateMedic,
+} from "../services";
 
 const getAllMedics = async (req: Request, res: Response) => {
   try {
-    let medics = await Medic.find(); //depende de los casos de uso si queremos mostrar el schedule
+    let medics = await findAllMedics(); //depende de los casos de uso si queremos mostrar el schedule
     medics = medics.map((medic) => {
+      //TODO: averiguar si este sanitizer se puede separar y reusar
       medic.schedule = [];
       return medic;
     });
@@ -14,11 +21,10 @@ const getAllMedics = async (req: Request, res: Response) => {
   }
 };
 
+//TODO: ver si se puede hacer validaciones a los params y si es seguro pasar por ahi data
 const getMedic = async (req: Request, res: Response) => {
   try {
-    const _id = req.params.id;
-
-    const medic = await Medic.findOne({ _id });
+    const medic = await findMedic({ _id: req.params.id });
 
     if (!medic) {
       return res.status(404).json({ message: "Not found" });
@@ -33,14 +39,13 @@ const getMedic = async (req: Request, res: Response) => {
 const postMedic = async (req: Request, res: Response) => {
   try {
     const { firstName, lastNameF, lastNameM, speciality } = req.body;
-    const medic = new Medic({
+    console.log("firstName", firstName);
+    const medic = await saveMedic({
       firstName,
       lastNameF,
       lastNameM,
       speciality,
     });
-
-    await medic.save();
     res.status(201).send(medic);
   } catch (error) {
     res.status(500).json({ message: "Server error" });
@@ -49,34 +54,29 @@ const postMedic = async (req: Request, res: Response) => {
 
 const putMedic = async (req: Request, res: Response) => {
   try {
-    const _id = req.params.id;
+    const id = req.params.id;
 
     const { firstName, lastNameF, lastNameM, schedule } = req.body;
 
-    const medic = await Medic.findOneAndUpdate(
-      { _id },
-      {
-        firstName,
-        lastNameF,
-        lastNameM,
-        schedule,
-      }
-    );
+    const medic = await updateMedic(id, {
+      firstName,
+      lastNameF,
+      lastNameM,
+      schedule,
+    });
 
     if (!medic) return res.status(404).json({ message: "Not found" });
 
-    res.status(201).send(medic);
+    res.status(201).send({ medic, message: "Medico actualizado" });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
 };
 
-//custom methods
+//TODO: aca ver para devolver medics sin schedule
 const getMedicsBySpeciality = async (req: Request, res: Response) => {
   try {
-    const medics = await Medic.find({
-      speciality: req.params.idEsp,
-    }).populate("speciality");
+    const medics = await findMedicsBySpeciality(req.params.idSpe);
 
     res.send(medics);
   } catch (error) {

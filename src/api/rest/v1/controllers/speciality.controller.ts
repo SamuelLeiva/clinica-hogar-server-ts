@@ -1,9 +1,13 @@
 import { Request, Response } from "express";
-import Speciality from "../model/Speciality";
+import {
+  findAllSpecialities,
+  findSpeciality,
+  saveSpeciality,
+} from "../services";
 
 const getAllSpecialities = async (req: Request, res: Response) => {
   try {
-    const specialities = await Speciality.find();
+    const specialities = await findAllSpecialities();
     res.send(specialities);
   } catch (error) {
     res.status(500).json({ message: "Server error" });
@@ -14,7 +18,7 @@ const getSpeciality = async (req: Request, res: Response) => {
   try {
     const _id = req.params.id;
 
-    const speciality = await Speciality.findOne({ _id });
+    const speciality = await findSpeciality({ _id });
 
     if (!speciality) {
       return res.status(404).json({ message: "Not found" });
@@ -28,11 +32,8 @@ const getSpeciality = async (req: Request, res: Response) => {
 
 const postSpeciality = async (req: Request, res: Response) => {
   try {
-    const speciality = new Speciality({
-      ...req.body,
-    });
-
-    await speciality.save();
+    const { name, appointmentCost } = req.body;
+    const speciality = await saveSpeciality({ name, appointmentCost });
     res.status(201).json({ message: "Speciality created", speciality });
   } catch (error) {
     res.status(500).json({ message: "Server error" });

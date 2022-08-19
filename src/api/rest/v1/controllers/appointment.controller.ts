@@ -1,12 +1,17 @@
 import { Request, Response } from "express";
-import mongoose from "mongoose";
-import Appointment from "../model/Appointment";
-import Medic from "../model/Medic";
-import Patient from "../model/Patient";
+
+import {
+  findAllAppointments,
+  findAppointment,
+  findAppointmentsByPatient,
+  findMedic,
+  findPatient,
+  saveAppointment,
+} from "../services";
 
 const getAllAppointments = async (req: Request, res: Response) => {
   try {
-    const appointments = await Appointment.find();
+    const appointments = await findAllAppointments();
     res.send(appointments);
   } catch (error) {
     res.status(500).json({ message: "Server error" });
@@ -17,7 +22,7 @@ const getAppointment = async (req: Request, res: Response) => {
   try {
     const _id = req.params.id;
 
-    const appointment = await Appointment.findOne({ _id });
+    const appointment = await findAppointment({ _id });
 
     if (!appointment) {
       return res.status(404).json({ message: "Not found" });
@@ -31,22 +36,20 @@ const getAppointment = async (req: Request, res: Response) => {
 
 const postAppointment = async (req: Request, res: Response) => {
   try {
-    const patient = await Patient.findById(req.params.idPatient);
-    const medic = await Medic.findById(req.params.idMedic);
+    const patient = await findPatient({ _id: req.params.idPatient });
+    const medic = await findMedic({ _id: req.params.idMedic });
 
     if (!patient || !medic)
       return res.status(404).json({ message: "Not found" });
 
     const { date, appointmentType } = req.body;
 
-    const appointment = new Appointment({
+    const saved = await saveAppointment({
       date,
       appointmentType,
       patient,
       medic,
     });
-
-    const saved = await appointment.save();
 
     return res.status(201).send(saved);
   } catch (error) {
@@ -54,20 +57,9 @@ const postAppointment = async (req: Request, res: Response) => {
   }
 };
 
-//custom methods
 const getAppointmentsByPatient = async (req: Request, res: Response) => {
   try {
-    const appointments = await Appointment.find({
-      patient: new mongoose.Types.ObjectId(req.params.idPatient),
-    })
-      .populate({
-        path: "medic",
-        populate: {
-          path: "speciality",
-        },
-      })
-      .populate("patient");
-
+    const appointments = await findAppointmentsByPatient(req.params.idPatient);
     return res.send(appointments);
   } catch (error) {
     res.status(500).json({ message: "Server error" });
