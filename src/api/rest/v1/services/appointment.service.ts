@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import { Appointment } from "../models";
 
 const findAllAppointments = async () => {
