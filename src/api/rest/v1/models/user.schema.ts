@@ -1,17 +1,18 @@
 import { Schema, Document, model, Model } from "mongoose";
+import { User } from "../interfaces/user.interface";
 
-import * as bcrypt from "bcryptjs";
+// import * as bcrypt from "bcryptjs";
 
-declare interface IUser extends Document {
-  email?: string;
-  password?: string;
-  refreshToken?: string;
-  document?: string;
-  deletedAt?: Date;
-  patients?: Array<any>;
-}
+// declare interface IUser extends Document {
+//   email?: string;
+//   password?: string;
+//   refreshToken?: string;
+//   document?: string;
+//   deletedAt?: Date;
+//   patients?: Array<any>;
+// }
 
-const userSchema: Schema = new Schema(
+const UserSchema: Schema = new Schema<User>(
   {
     email: {
       type: String,
@@ -34,7 +35,6 @@ const userSchema: Schema = new Schema(
     },
     deletedAt: {
       type: Date,
-      default: null,
     },
     patients: [
       {
@@ -45,26 +45,29 @@ const userSchema: Schema = new Schema(
   },
   {
     timestamps: true,
+    versionKey: false,
   }
 );
 
-userSchema.methods.toJSON = function (this: IUser) {
-  const user = this;
-  const userObject = user.toObject();
+//esto tambien
+// userSchema.methods.toJSON = function (this: User) {
+//   const user = this;
+//   const userObject = user.toObject();
 
-  delete userObject.password;
-  delete userObject.refreshToken;
+//   delete userObject.password;
+//   delete userObject.refreshToken;
 
-  return userObject;
-};
+//   return userObject;
+// };
 
-userSchema.pre<IUser>("save", async function (next) {
-  const user = this;
-  if (user.isModified("password")) {
-    user.password = await bcrypt.hash(user.password!, 8);
-  }
-});
+// //cambiar esto
+// userSchema.pre<IUser>("save", async function (next) {
+//   const user = this;
+//   if (user.isModified("password")) {
+//     user.password = await bcrypt.hash(user.password!, 8);
+//   }
+// });
 
-const User: Model<IUser> = model("User", userSchema);
+const UserModel = model("users", UserSchema);
 
-export default User;
+export default UserModel;

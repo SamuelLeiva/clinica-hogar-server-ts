@@ -1,14 +1,15 @@
 import { model, Schema, Document, Model } from "mongoose";
+import { Medic } from "../interfaces/medic.interface";
 
-export interface IMedic extends Document {
-  firstName?: string;
-  lastNameF?: string;
-  lastNameM?: string;
-  schedule?: any;
-  speciality?: any;
-}
+// export interface IMedic extends Document {
+//   firstName?: string;
+//   lastNameF?: string;
+//   lastNameM?: string;
+//   schedule?: any;
+//   speciality?: any;
+// }
 
-const medicSchema: Schema = new Schema(
+const MedicSchema: Schema = new Schema<Medic>(
   {
     firstName: {
       type: String,
@@ -54,12 +55,12 @@ const medicSchema: Schema = new Schema(
 );
 
 //relationships
-medicSchema.virtual("appointments", {
+MedicSchema.virtual("appointments", {
   ref: "Appointment",
   localField: "_id",
   foreignField: "medic",
 });
 
-const Medic: Model<IMedic> = model("Medic", medicSchema);
+const MedicModel = model("Medic", MedicSchema);
 
-export default Medic;
+export default MedicModel;
