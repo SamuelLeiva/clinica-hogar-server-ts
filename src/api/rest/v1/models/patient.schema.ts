@@ -1,20 +1,6 @@
 import { Schema, Document, model, Model } from "mongoose";
 import { Patient } from "../interfaces/patient.interface";
 
-// export interface IPatient extends Document {
-//   firstName?: string;
-//   lastNameF?: string;
-//   lastNameM?: string;
-//   documentType?: string;
-//   document?: string;
-//   birthday?: string;
-//   phoneNumber?: string;
-//   sex?: string;
-//   deletedAt?: Date;
-//   users?: Array<any>;
-//   appointments?: Array<any>;
-// }
-
 const PatientSchema: Schema = new Schema<Patient>(
   {
     firstName: {
@@ -31,6 +17,10 @@ const PatientSchema: Schema = new Schema<Patient>(
       type: String,
       required: true,
       trim: true,
+    },
+    email: {
+      type: String,
+      required: true,
     },
     documentType: {
       type: String,

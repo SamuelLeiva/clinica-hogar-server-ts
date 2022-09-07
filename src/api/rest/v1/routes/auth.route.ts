@@ -4,14 +4,14 @@ import {
   logout,
   logoutAll,
   refresh,
-  register,
+  registerController,
 } from "../controllers";
 import { validateLogin, validateRegister } from "../validations";
 
 const router = express.Router();
 
 router.post("/login", validateLogin, loginController); //middleware para la cookie
-router.post("/register", validateRegister, register);
+router.post("/register", validateRegister, registerController);
 
 router.get("/refresh", refresh);
 
