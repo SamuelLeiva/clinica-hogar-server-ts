@@ -10,7 +10,7 @@ import { validateLogin, validateRegister } from "../validations";
 
 const router = express.Router();
 
-router.post("/login", validateLogin, loginController); //middleware para la cookie
+router.post("/login", validateLogin, loginController);
 router.post("/register", validateRegister, registerController);
 
 router.get("/refresh", refresh);
