@@ -34,6 +34,8 @@ const postSpeciality = async (req: Request, res: Response) => {
   try {
     const { name, appointmentCost } = req.body;
     const speciality = await saveSpeciality({ name, appointmentCost });
+    if (speciality === "ALREADY_SPECIALITY")
+      return res.status(400).json({ message: speciality });
     res.status(201).json({ message: "Speciality created", speciality });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
