@@ -12,6 +12,4 @@ const validateCreateMedic = [
   },
 ];
 
-const validateUpdateMedic = [...validateCreateMedic];
-
-export { validateCreateMedic, validateUpdateMedic };
+export { validateCreateMedic };

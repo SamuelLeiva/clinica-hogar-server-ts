@@ -57,6 +57,7 @@ const PatientSchema: Schema = new Schema<Patient>(
   },
   {
     timestamps: true,
+    versionKey: false,
   }
 );
 
