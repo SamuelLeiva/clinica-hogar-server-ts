@@ -1,35 +1,38 @@
-import MedicModel from "../models/medic.schema";
+import { Medic } from "../models";
 
 const findAllMedics = async () => {
-  const allMedics = await MedicModel.find();
+  const allMedics = await Medic.find();
   return allMedics;
 };
 
 const findMedic = async (props: any) => {
-  const medic = MedicModel.findOne({ ...props });
+  const medic = Medic.findOne({ ...props });
   return medic;
 };
 
 const saveMedic = async (props: any) => {
-  const saved = await MedicModel.create({ ...props });
+  const medic = new Medic({
+    ...props,
+  });
+  const saved = await medic.save();
+
   return saved;
 };
 
 const updateMedic = async (id: string, props: any) => {
-  const medic = await MedicModel.findOneAndUpdate(
+  const medic = await Medic.findOneAndUpdate(
     { _id: id },
     {
       ...props,
-    },
-    { new: true }
+    }
   );
   return medic;
 };
 
 const findMedicsBySpeciality = async (idSpe: string) => {
-  const medics = await MedicModel.find({
+  const medics = await Medic.find({
     speciality: idSpe,
-  });
+  }).populate("speciality");
   return medics;
 };
 

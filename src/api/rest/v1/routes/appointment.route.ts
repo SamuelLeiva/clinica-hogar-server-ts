@@ -34,6 +34,6 @@ router.post(
   postAppointment
 );
 
-router.get("/patient/:idPatient", getAppointmentsByPatient);
+router.get("/patient/:idPatient", verifyJWT, getAppointmentsByPatient);
 
 export default router;

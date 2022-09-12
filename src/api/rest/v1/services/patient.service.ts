@@ -1,5 +1,4 @@
 import { Patient } from "../models";
-import PatientModel from "../models/patient.schema";
 
 const findAllPatients = async () => {
   const allPatients = await Patient.find();
@@ -12,10 +11,11 @@ const findPatient = async (props: any) => {
 };
 
 const savePatient = async (props: any) => {
-  const patient = await PatientModel.create({
+  const patient = new Patient({
     ...props,
   });
-  return patient;
+  const patientDB = await patient.save();
+  return patientDB;
 };
 
 const updatePatientUser = async (idPatient: string, idUser: string) => {

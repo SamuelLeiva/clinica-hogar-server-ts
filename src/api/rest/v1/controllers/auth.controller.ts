@@ -8,18 +8,37 @@ import {
   findPatient,
   findUser,
   loginUser,
-  registerUser,
   savePatient,
   saveUser,
   updatePatientUser,
   updateUser,
-  updateUserPatient,
 } from "../services";
 
 //iniciar sesión
 const loginController = async ({ body }: Request, res: Response) => {
   try {
     const { email, password } = body;
+
+    //trasladarlo a express validator despues
+    // if (!email || !password)
+    //   return res
+    //     .status(400)
+    //     .json({ message: "Username and password are required." });
+
+    // const foundUser = await findUser({ email });
+
+    // if (!foundUser) return res.status(401).json({ message: "Unauthorized" }); //Unauthorized
+
+    // const isMatch = await bcrypt.compare(password, foundUser.password!);
+
+    // if (!isMatch) return res.status(401).json({ message: "Unauthorized" }); //Unauthorized
+
+    // // create JWTs
+    // const accessToken = await generateAuthToken(foundUser, "access");
+    // const refreshToken = await generateAuthToken(foundUser, "refresh");
+
+    // foundUser.refreshToken = refreshToken;
+    // const result = await foundUser.save();
 
     const responseUser = await loginUser({ email, password });
 
@@ -51,7 +70,7 @@ const loginController = async ({ body }: Request, res: Response) => {
 };
 
 //registrarse
-const registerController = async ({ body }: Request, res: Response) => {
+const register = async (req: Request, res: Response) => {
   try {
     //destructurar
     const {
@@ -65,33 +84,38 @@ const registerController = async ({ body }: Request, res: Response) => {
       documentType,
       birthday,
       phoneNumber,
-    } = body;
+    } = req.body;
 
-    const registeredUser = await registerUser({ email, password });
+    if (!email || !password)
+      return res
+        .status(400)
+        .json({ message: "Username and password are required." });
 
-    if (registeredUser === "ALREADY_USER") {
-      return res.status(409).json({ message: registeredUser });
-    }
+    const duplicate = await findUser({ email });
+    if (duplicate) return res.status(409).json({ message: "Conflict" }); //Conflict
 
-    const duplicatePatient = await findPatient({ email });
+    const duplicatePatient = await findPatient({ document });
 
-    console.log("duplicatePatient", duplicatePatient);
+    //let user;
+    let userDB;
 
     if (duplicatePatient) {
+      //creamos el user y lo conectamos con el paciente con sus datos
+      userDB = await saveUser({
+        email,
+        password,
+        document,
+        patients: [duplicatePatient._id],
+      });
+
       //actualizamos el paciente
-      await updatePatientUser(duplicatePatient._id, registeredUser._id);
-
-      //actualizamos el usuario
-      await updateUserPatient(registeredUser._id, duplicatePatient._id);
+      await updatePatientUser(duplicatePatient._id, userDB._id);
     } else {
-      console.log("Entramos a crear el paciente");
-
-      //creamos el paciente y lo conectamos
+      //creamos el paciente
       const patientDB = await savePatient({
         firstName,
         lastNameF,
         lastNameM,
-        email,
         document,
         documentType,
         sex,
@@ -99,18 +123,19 @@ const registerController = async ({ body }: Request, res: Response) => {
         phoneNumber,
       });
 
-      console.log("Conectamos el paciente");
+      userDB = await saveUser({
+        email,
+        password,
+        document,
+        patients: [patientDB._id],
+      });
 
       //actualizamos el paciente
-      await updatePatientUser(patientDB._id, registeredUser._id);
-
-      //actualizamos el usuario
-      await updateUserPatient(registeredUser._id, patientDB._id);
+      await updatePatientUser(patientDB._id, userDB._id);
     }
-
     return res
       .status(201)
-      .send({ message: "Register succesful", user: registeredUser });
+      .send({ message: "Register succesful", user: userDB });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
@@ -173,4 +198,4 @@ const logoutAll = async (req: Request, res: Response) => {
   }
 };
 
-export { loginController, registerController, logout, logoutAll, refresh };
+export { loginController, register, logout, logoutAll, refresh };

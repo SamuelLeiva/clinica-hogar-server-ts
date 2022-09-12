@@ -1,13 +1,10 @@
-import { Response } from "express";
-import { JwtPayload } from "jsonwebtoken";
-import { RequestExt } from "../interfaces/req-ext.interface";
+import { Request, Response } from "express";
 import { findPatient } from "../services";
 
-const getMyUser = async (req: RequestExt, res: Response) => {
+const getMyUser = async (req: Request, res: Response) => {
   try {
-    const user = req.user as JwtPayload;
-    console.log("user", user.id);
-    const patientDB = await findPatient({ email: user.id });
+    const user = req.body.user;
+    const patientDB = await findPatient({ document: user.document });
     if (!patientDB) return res.status(404).json({ message: "Not found" });
     return res.send(patientDB);
   } catch (error) {

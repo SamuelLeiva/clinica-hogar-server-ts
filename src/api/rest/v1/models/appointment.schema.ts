@@ -32,7 +32,6 @@ const AppointmentSchema: Schema = new Schema<Appointment>(
   },
   {
     timestamps: true,
-    versionKey: false,
   }
 );
 

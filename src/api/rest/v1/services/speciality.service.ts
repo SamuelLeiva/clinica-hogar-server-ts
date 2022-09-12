@@ -1,20 +1,20 @@
-import { Speciality } from "../interfaces/speciality.interface";
-import SpecialityModel from "../models/speciality.schema";
+import { Speciality } from "../models";
 
 const findAllSpecialities = async () => {
-  const allSpecialities = await SpecialityModel.find();
+  const allSpecialities = await Speciality.find();
   return allSpecialities;
 };
 
 const findSpeciality = async (props: any) => {
-  const speciality = SpecialityModel.findOne({ ...props });
+  const speciality = Speciality.findOne({ ...props });
   return speciality;
 };
 
-const saveSpeciality = async ({ name, appointmentCost }: Speciality) => {
-  const checkIs = await SpecialityModel.findOne({ name });
-  if (checkIs) return "ALREADY_SPECIALITY";
-  const specialityDB = await SpecialityModel.create({ name, appointmentCost });
+const saveSpeciality = async (props: any) => {
+  const speciality = new Speciality({
+    ...props,
+  });
+  const specialityDB = await speciality.save();
   return specialityDB;
 };
 

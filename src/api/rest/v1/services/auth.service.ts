@@ -1,8 +1,6 @@
 import { Auth } from "../interfaces/auth.interface";
-import { User } from "../interfaces/user.interface";
-
 import UserModel from "../models/user.schema";
-import { encrypt, verified } from "../utils/bcrypt.handle";
+import { verified } from "../utils/bcrypt.handle";
 import { generateToken } from "../utils/jwt.handle";
 
 const loginUser = async ({ email, password }: Auth) => {
@@ -30,16 +28,6 @@ const loginUser = async ({ email, password }: Auth) => {
   return data;
 };
 
-const registerUser = async ({ email, password }: User) => {
-  const checkIs = await UserModel.findOne({ email });
-  if (checkIs) return "ALREADY_USER";
-  const passHash = await encrypt(password);
-  const registerNewUser = await UserModel.create({
-    email,
-    password: passHash,
-  });
+// const registerUser = async ()
 
-  return registerNewUser;
-};
-
-export { loginUser, registerUser };
+export { loginUser };

@@ -25,6 +25,10 @@ const UserSchema: Schema = new Schema<User>(
       type: String,
       required: true,
     },
+    document: {
+      type: String,
+      required: true,
+    },
     refreshToken: {
       type: String,
       default: "",

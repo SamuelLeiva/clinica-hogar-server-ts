@@ -4,13 +4,11 @@ import {
   getSpeciality,
   postSpeciality,
 } from "../controllers";
-import { checkJWT } from "../middlewares/session";
-import { validateCreateSpeciality } from "../validations";
 
 const router = express.Router();
 
-router.get("/", checkJWT, getAllSpecialities);
-router.get("/:id", checkJWT, getSpeciality);
-router.post("/", checkJWT, validateCreateSpeciality, postSpeciality);
+router.get("/", getAllSpecialities);
+router.get("/:id", getSpeciality);
+router.post("/", postSpeciality);
 
 export default router;

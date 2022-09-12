@@ -51,7 +51,6 @@ const MedicSchema: Schema = new Schema<Medic>(
   },
   {
     timestamps: true,
-    versionKey: false,
   }
 );
 

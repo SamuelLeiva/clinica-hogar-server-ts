@@ -9,15 +9,12 @@ import {
 
 const getAllMedics = async (req: Request, res: Response) => {
   try {
-    let medics = (await findAllMedics()).map((medic) => {
+    let medics = await findAllMedics(); //depende de los casos de uso si queremos mostrar el schedule
+    medics = medics.map((medic) => {
+      //TODO: averiguar si este sanitizer se puede separar y reusar
       medic.schedule = [];
       return medic;
-    }); //depende de los casos de uso si queremos mostrar el schedule
-    // medics = medics.map((medic) => {
-    //   //TODO: averiguar si este sanitizer se puede separar y reusar
-    //   medic.schedule = [];
-    //   return medic;
-    // });
+    });
     res.send(medics);
   } catch (error) {
     res.status(500).json({ message: "Server error" });
@@ -79,12 +76,7 @@ const putMedic = async (req: Request, res: Response) => {
 //TODO: aca ver para devolver medics sin schedule
 const getMedicsBySpeciality = async (req: Request, res: Response) => {
   try {
-    const medics = (await findMedicsBySpeciality(req.params.idSpe)).map(
-      (medic) => {
-        medic.schedule = [];
-        return medic;
-      }
-    );
+    const medics = await findMedicsBySpeciality(req.params.idSpe);
 
     res.send(medics);
   } catch (error) {
