@@ -77,14 +77,12 @@ const putMedic = async (req: Request, res: Response) => {
 };
 
 //TODO: aca ver para devolver medics sin schedule
-const getMedicsBySpeciality = async (req: Request, res: Response) => {
+const getMedicsBySpeciality = async ({ params }: Request, res: Response) => {
   try {
-    const medics = (await findMedicsBySpeciality(req.params.idSpe)).map(
-      (medic) => {
-        medic.schedule = [];
-        return medic;
-      }
-    );
+    const medics = (await findMedicsBySpeciality(params.idSpe)).map((medic) => {
+      medic.schedule = [];
+      return medic;
+    });
 
     res.send(medics);
   } catch (error) {

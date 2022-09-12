@@ -1,17 +1,6 @@
 import { Schema, Document, model, Model } from "mongoose";
 import { User } from "../interfaces/user.interface";
 
-// import * as bcrypt from "bcryptjs";
-
-// declare interface IUser extends Document {
-//   email?: string;
-//   password?: string;
-//   refreshToken?: string;
-//   document?: string;
-//   deletedAt?: Date;
-//   patients?: Array<any>;
-// }
-
 const UserSchema: Schema = new Schema<User>(
   {
     email: {
@@ -35,7 +24,7 @@ const UserSchema: Schema = new Schema<User>(
     patients: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Patient",
+        ref: "patients",
       },
     ],
   },

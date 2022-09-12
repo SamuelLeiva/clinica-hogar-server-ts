@@ -9,6 +9,8 @@ const checkJWT = async (req: RequestExt, res: Response, next: NextFunction) => {
     const jwt = jwtByUser.split(" ").pop();
     const isUser = (await verifyToken(`${jwt}`)) as { id: string };
 
+    console.log("isUser", isUser);
+
     if (!isUser) {
       res.status(401).send("INVALID_JWT");
     } else {

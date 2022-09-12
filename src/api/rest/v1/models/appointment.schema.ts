@@ -1,13 +1,6 @@
 import { model, Model, Schema, Document } from "mongoose";
 import { Appointment } from "../interfaces/appointment.interface";
 
-// export interface IAppointment extends Document {
-//   date: Date;
-//   medic?: any;
-//   patient?: any;
-//   appointmentType?: string;
-// }
-
 const AppointmentSchema: Schema = new Schema<Appointment>(
   {
     date: {
@@ -22,12 +15,12 @@ const AppointmentSchema: Schema = new Schema<Appointment>(
     patient: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: "Patient",
+      ref: "patients",
     },
     medic: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: "Medic",
+      ref: "medics",
     },
   },
   {

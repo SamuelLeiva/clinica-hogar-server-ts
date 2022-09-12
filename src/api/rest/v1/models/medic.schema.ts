@@ -46,7 +46,7 @@ const MedicSchema: Schema = new Schema<Medic>(
     speciality: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: "Speciality",
+      ref: "specialities",
     },
   },
   {
@@ -57,11 +57,11 @@ const MedicSchema: Schema = new Schema<Medic>(
 
 //relationships
 MedicSchema.virtual("appointments", {
-  ref: "Appointment",
+  ref: "appointments",
   localField: "_id",
   foreignField: "medic",
 });
 
-const MedicModel = model("Medic", MedicSchema);
+const MedicModel = model("medics", MedicSchema);
 
 export default MedicModel;

@@ -8,7 +8,6 @@ export interface Patient {
   document: string;
   phoneNumber: string;
   sex: string;
-  deletedAt: Date;
   users: any[];
   appointments: any[];
 }

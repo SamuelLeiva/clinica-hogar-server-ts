@@ -45,13 +45,10 @@ const PatientSchema: Schema = new Schema<Patient>(
       type: String,
       required: true,
     },
-    deletedAt: {
-      type: Date,
-    },
     users: [
       {
         type: Schema.Types.ObjectId,
-        ref: "User",
+        ref: "users",
       },
     ],
   },
@@ -63,7 +60,7 @@ const PatientSchema: Schema = new Schema<Patient>(
 
 //relacion con citas
 PatientSchema.virtual("appointments", {
-  ref: "Appointment",
+  ref: "appointments",
   localField: "_id",
   foreignField: "patient",
 });

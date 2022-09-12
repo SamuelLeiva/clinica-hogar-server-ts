@@ -20,7 +20,7 @@ const SpecialitySchema = new Schema<Speciality>(
 );
 
 SpecialitySchema.virtual("medics", {
-  ref: "Medic",
+  ref: "medics",
   localField: "_id",
   foreignField: "speciality",
 });
