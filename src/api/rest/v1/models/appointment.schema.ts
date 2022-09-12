@@ -1,14 +1,13 @@
 import { model, Model, Schema, Document } from "mongoose";
-import { Appointment } from "../interfaces/appointment.interface";
 
-// export interface IAppointment extends Document {
-//   date: Date;
-//   medic?: any;
-//   patient?: any;
-//   appointmentType?: string;
-// }
+export interface IAppointment extends Document {
+  date: Date;
+  medic?: any;
+  patient?: any;
+  appointmentType?: string;
+}
 
-const AppointmentSchema: Schema = new Schema<Appointment>(
+const appointmentSchema: Schema = new Schema(
   {
     date: {
       type: Date,
@@ -35,6 +34,9 @@ const AppointmentSchema: Schema = new Schema<Appointment>(
   }
 );
 
-const AppointmentModel = model("appointments", AppointmentSchema);
+const Appointment: Model<IAppointment> = model(
+  "Appointment",
+  appointmentSchema
+);
 
-export default AppointmentModel;
+export default Appointment;

@@ -7,7 +7,6 @@ import { generateAuthToken } from "../helpers";
 import {
   findPatient,
   findUser,
-  loginUser,
   savePatient,
   saveUser,
   updatePatientUser,
@@ -15,55 +14,41 @@ import {
 } from "../services";
 
 //iniciar sesión
-const loginController = async ({ body }: Request, res: Response) => {
+const login = async (req: Request, res: Response) => {
   try {
-    const { email, password } = body;
+    const { email, password } = req.body;
 
     //trasladarlo a express validator despues
-    // if (!email || !password)
-    //   return res
-    //     .status(400)
-    //     .json({ message: "Username and password are required." });
+    if (!email || !password)
+      return res
+        .status(400)
+        .json({ message: "Username and password are required." });
 
-    // const foundUser = await findUser({ email });
+    const foundUser = await findUser({ email });
 
-    // if (!foundUser) return res.status(401).json({ message: "Unauthorized" }); //Unauthorized
+    if (!foundUser) return res.status(401).json({ message: "Unauthorized" }); //Unauthorized
 
-    // const isMatch = await bcrypt.compare(password, foundUser.password!);
+    const isMatch = await bcrypt.compare(password, foundUser.password!);
 
-    // if (!isMatch) return res.status(401).json({ message: "Unauthorized" }); //Unauthorized
+    if (!isMatch) return res.status(401).json({ message: "Unauthorized" }); //Unauthorized
 
-    // // create JWTs
-    // const accessToken = await generateAuthToken(foundUser, "access");
-    // const refreshToken = await generateAuthToken(foundUser, "refresh");
+    // create JWTs
+    const accessToken = await generateAuthToken(foundUser, "access");
+    const refreshToken = await generateAuthToken(foundUser, "refresh");
 
-    // foundUser.refreshToken = refreshToken;
-    // const result = await foundUser.save();
+    foundUser.refreshToken = refreshToken;
+    const result = await foundUser.save();
 
-    const responseUser = await loginUser({ email, password });
+    // Creates Secure Cookie with refresh token
+    res.cookie("jwt", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
 
-    if (responseUser === "PASSWORD_INCORRECT") {
-      res.status(403).json({ message: responseUser });
-    } else {
-      //TODO: hacer una interfaz de la respuesta pa que no de error
-      const { accessToken, refreshToken, user } = responseUser as {
-        accessToken: string;
-        refreshToken: string;
-        user: any;
-      };
-      // Creates Secure Cookie with refresh token
-      res.cookie("jwt", refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        maxAge: 24 * 60 * 60 * 1000,
-      });
-
-      // TODO: Send authorization roles (medico y user normal)
-      // Send access token and user
-      // TODO: check if is necessary sending the entire user
-      return res.json({ user, accessToken });
-    }
+    // Send authorization roles and access token to user
+    return res.json({ result, accessToken });
   } catch (error) {
     return res.status(500).json({ message: "Server error" });
   }
@@ -198,4 +183,4 @@ const logoutAll = async (req: Request, res: Response) => {
   }
 };
 
-export { loginController, register, logout, logoutAll, refresh };
+export { login, register, logout, logoutAll, refresh };

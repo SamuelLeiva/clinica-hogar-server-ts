@@ -1,21 +1,20 @@
 import { Schema, Document, model, Model } from "mongoose";
-import { Patient } from "../interfaces/patient.interface";
 
-// export interface IPatient extends Document {
-//   firstName?: string;
-//   lastNameF?: string;
-//   lastNameM?: string;
-//   documentType?: string;
-//   document?: string;
-//   birthday?: string;
-//   phoneNumber?: string;
-//   sex?: string;
-//   deletedAt?: Date;
-//   users?: Array<any>;
-//   appointments?: Array<any>;
-// }
+export interface IPatient extends Document {
+  firstName?: string;
+  lastNameF?: string;
+  lastNameM?: string;
+  documentType?: string;
+  document?: string;
+  birthday?: string;
+  phoneNumber?: string;
+  sex?: string;
+  deletedAt?: Date;
+  users?: Array<any>;
+  appointments?: Array<any>;
+}
 
-const PatientSchema: Schema = new Schema<Patient>(
+const patientSchema: Schema = new Schema(
   {
     firstName: {
       type: String,
@@ -57,6 +56,7 @@ const PatientSchema: Schema = new Schema<Patient>(
     },
     deletedAt: {
       type: Date,
+      default: null,
     },
     users: [
       {
@@ -71,12 +71,12 @@ const PatientSchema: Schema = new Schema<Patient>(
 );
 
 //relacion con citas
-PatientSchema.virtual("appointments", {
+patientSchema.virtual("appointments", {
   ref: "Appointment",
   localField: "_id",
   foreignField: "patient",
 });
 
-const PatientModel = model("patients", PatientSchema);
+const Patient: Model<IPatient> = model("Patient", patientSchema);
 
-export default PatientModel;
+export default Patient;
