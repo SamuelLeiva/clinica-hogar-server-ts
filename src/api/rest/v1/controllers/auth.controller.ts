@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
 import * as jwt from "jsonwebtoken";
-import * as bcrypt from "bcryptjs";
 
-import { generateAuthToken } from "../helpers";
+import { generateToken } from "../utils/jwt.handle";
 
 import {
   findPatient,
@@ -10,11 +9,11 @@ import {
   loginUser,
   registerUser,
   savePatient,
-  saveUser,
   updatePatientUser,
   updateUser,
   updateUserPatient,
 } from "../services";
+import { RequestExt } from "../interfaces/req-ext.interface";
 
 //iniciar sesión
 const loginController = async ({ body }: Request, res: Response) => {
@@ -116,61 +115,62 @@ const registerController = async ({ body }: Request, res: Response) => {
   }
 };
 
+const logoutController = (req: RequestExt, res: Response) => {};
+
+const refreshController = (req: RequestExt, res: Response) => {};
+
+//usando cookies
 //refresh token
-const refresh = async (req: Request, res: Response) => {
-  const cookies = req.cookies;
+// const refresh = async (req: Request, res: Response) => {
+//   const cookies = req.cookies;
 
-  if (!cookies?.jwt) return res.status(401).json({ message: "Unauthorized" });
-  const refreshToken = cookies.jwt;
+//   if (!cookies?.jwt) return res.status(401).json({ message: "Unauthorized" });
+//   const refreshToken = cookies.jwt;
 
-  const foundUser = await findUser({ refreshToken });
+//   const foundUser = await findUser({ refreshToken });
 
-  if (!foundUser) return res.status(403).json({ message: "Forbidden" }); //Forbidden
+//   if (!foundUser) return res.status(403).json({ message: "Forbidden" }); //Forbidden
 
-  // evaluate refresh jwt
-  let decoded: any;
+//   // evaluate refresh jwt
+//   let decoded: any;
 
-  decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_TOKEN_SECRET!);
+//   decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_TOKEN_SECRET!);
 
-  if (foundUser._id.toString() !== decoded._id)
-    return res.status(403).json({ message: "Unauthorized" }); //Unauthorized
+//   if (foundUser._id.toString() !== decoded._id)
+//     return res.status(403).json({ message: "Unauthorized" }); //Unauthorized
 
-  const accessToken = await generateAuthToken(foundUser, "access");
+//   const accessToken = await generateToken(foundUser, "access");
 
-  res.json({ foundUser, accessToken });
+//   res.json({ foundUser, accessToken });
+// };
+
+// //TODO: verificar que funcione el logout desde postman. Configurar cookies en postman
+// const logoutController = async (req: Request, res: Response) => {
+//   // On client, also delete the accessToken
+//   const cookies = req.cookies;
+
+//   console.log("cookies", cookies);
+
+//   if (!cookies?.jwt) return res.status(204).json({ message: "No content" }); //No content
+//   const refreshToken = cookies.jwt;
+
+//   // Is refreshToken in db?
+//   const foundUser = await findUser({ refreshToken });
+
+//   if (!foundUser) {
+//     res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true });
+//     return res.status(204).json({ message: "No content" });
+//   }
+
+//   // Delete refreshToken in db
+//   await updateUser(foundUser._id, { refreshToken: "" });
+//   res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true });
+//   res.status(204).json({ message: "Logged out" });
+// };
+
+export {
+  loginController,
+  registerController,
+  logoutController,
+  refreshController,
 };
-
-//TODO: verificar que funcione el logout desde postman. Configurar cookies en postman
-const logout = async (req: Request, res: Response) => {
-  // On client, also delete the accessToken
-  const cookies = req.cookies;
-
-  if (!cookies?.jwt) return res.status(204).json({ message: "No content" }); //No content
-  const refreshToken = cookies.jwt;
-
-  // Is refreshToken in db?
-  const foundUser = await findUser({ refreshToken });
-
-  if (!foundUser) {
-    res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true });
-    return res.status(204).json({ message: "No content" });
-  }
-
-  // Delete refreshToken in db
-  const result = await updateUser(foundUser._id, { refreshToken: "" });
-  res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true });
-  res.status(204).json({ message: "Logged out" });
-};
-
-//TODO: ver si conservar o quitar
-const logoutAll = async (req: Request, res: Response) => {
-  try {
-    req.body.user.tokens = [];
-    await req.body.user.save();
-    res.json({ message: "Success in logging out all." });
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
-export { loginController, registerController, logout, logoutAll, refresh };

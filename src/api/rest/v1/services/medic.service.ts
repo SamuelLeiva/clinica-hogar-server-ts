@@ -30,7 +30,6 @@ const findMedicsBySpeciality = async (idSpe: string) => {
   const medics = await MedicModel.find({
     speciality: idSpe,
   });
-  console.log("medics", medics);
   return medics;
 };
 
