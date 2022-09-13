@@ -1,5 +1,5 @@
 import { Speciality } from "../interfaces/speciality.interface";
-import SpecialityModel from "../models/speciality.schema";
+import { SpecialityModel } from "../models";
 
 const findAllSpecialities = async () => {
   const allSpecialities = await SpecialityModel.find();

@@ -1,4 +1,4 @@
-import MedicModel from "../models/medic.schema";
+import { MedicModel } from "../models";
 
 const findAllMedics = async () => {
   const allMedics = await MedicModel.find();
@@ -30,6 +30,7 @@ const findMedicsBySpeciality = async (idSpe: string) => {
   const medics = await MedicModel.find({
     speciality: idSpe,
   });
+  console.log("medics", medics);
   return medics;
 };
 

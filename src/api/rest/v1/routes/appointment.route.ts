@@ -5,8 +5,8 @@ import {
   postAppointment,
   getAppointmentsByPatient,
 } from "../controllers";
+import { checkJWT } from "../middlewares/session";
 
-import { verifyJWT } from "../middlewares/verifyJWT.middleware";
 import { validateCreateAppointment } from "../validations";
 
 const router = express.Router();
@@ -25,15 +25,16 @@ const router = express.Router();
  *        '500':
  *          description: Server error
  */
-router.get("/", getAllAppointments);
-router.get("/:id", getAppointment);
+router.get("/", checkJWT, getAllAppointments);
+router.get("/:id", checkJWT, getAppointment);
 
 router.post(
   "/patient/:idPatient/medic/:idMedic",
+  checkJWT,
   validateCreateAppointment,
   postAppointment
 );
 
-router.get("/patient/:idPatient", getAppointmentsByPatient);
+router.get("/patient/:idPatient", checkJWT, getAppointmentsByPatient);
 
 export default router;

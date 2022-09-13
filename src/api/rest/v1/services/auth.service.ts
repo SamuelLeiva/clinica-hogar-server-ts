@@ -1,7 +1,7 @@
 import { Auth } from "../interfaces/auth.interface";
 import { User } from "../interfaces/user.interface";
+import { UserModel } from "../models";
 
-import UserModel from "../models/user.schema";
 import { encrypt, verified } from "../utils/bcrypt.handle";
 import { generateToken } from "../utils/jwt.handle";
 

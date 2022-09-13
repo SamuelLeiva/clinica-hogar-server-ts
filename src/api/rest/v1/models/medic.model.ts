@@ -1,14 +1,6 @@
 import { model, Schema, Document, Model } from "mongoose";
 import { Medic } from "../interfaces/medic.interface";
 
-// export interface IMedic extends Document {
-//   firstName?: string;
-//   lastNameF?: string;
-//   lastNameM?: string;
-//   schedule?: any;
-//   speciality?: any;
-// }
-
 const MedicSchema: Schema = new Schema<Medic>(
   {
     firstName: {
