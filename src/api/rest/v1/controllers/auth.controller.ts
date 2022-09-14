@@ -12,6 +12,7 @@ import {
 } from "../services";
 import { RequestExt } from "../interfaces";
 import { JwtPayload } from "jsonwebtoken";
+import { handleHttpError } from "../utils/error.handle";
 
 //iniciar sesión
 const loginController = async ({ body }: Request, res: Response) => {
@@ -21,7 +22,7 @@ const loginController = async ({ body }: Request, res: Response) => {
     const responseUser = await loginUser({ email, password });
 
     if (responseUser === "PASSWORD_INCORRECT") {
-      res.status(403).json({ message: responseUser });
+      handleHttpError(res, 403, responseUser);
     } else {
       const { accessToken, refreshToken, user } = responseUser as {
         accessToken: string;
@@ -35,7 +36,7 @@ const loginController = async ({ body }: Request, res: Response) => {
       return res.json({ user, accessToken });
     }
   } catch (error) {
-    return res.status(500).json({ message: "Server error" });
+    handleHttpError(res, 500, "SERVER_ERROR");
   }
 };
 
@@ -59,7 +60,7 @@ const registerController = async ({ body }: Request, res: Response) => {
     const registeredUser = await registerUser({ email, password });
 
     if (registeredUser === "ALREADY_USER") {
-      return res.status(409).json({ message: registeredUser });
+      handleHttpError(res, 409, registeredUser);
     }
 
     const duplicatePatient = await findPatient({ email });
@@ -95,7 +96,7 @@ const registerController = async ({ body }: Request, res: Response) => {
       .status(201)
       .send({ message: "Register succesful", user: registeredUser });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    handleHttpError(res, 500, "SERVER_ERROR");
   }
 };
 
@@ -104,26 +105,26 @@ const logoutController = (req: RequestExt, res: Response) => {
     delete req.user;
     return res.send({ message: "Logged out" });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    handleHttpError(res, 500, "SERVER_ERROR");
   }
 };
 
 const refreshController = async ({ user }: RequestExt, res: Response) => {
   try {
     const foundUser = await findUser({ email: user?.id });
-    if (!foundUser) return res.status(403).json({ message: "FORBIDDEN" }); //Forbidden
+    if (!foundUser) handleHttpError(res, 403, "FORBIDDEN"); //Forbidden
 
     const decoded = (await verifyRefreshToken(
       foundUser.refreshToken
     )) as JwtPayload;
 
     if (foundUser.email !== decoded.id)
-      return res.status(403).json({ message: "Unauthorized" }); //Unauthorized
+      handleHttpError(res, 403, "UNAUTHORIZED"); //Unauthorized
     const accessToken = await generateToken(foundUser, "access");
 
     return res.json({ accessToken });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    handleHttpError(res, 500, "SERVER_ERROR");
   }
 };
 

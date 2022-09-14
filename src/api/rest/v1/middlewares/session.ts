@@ -1,6 +1,7 @@
 import { Response, NextFunction } from "express";
 import { RequestExt } from "../interfaces";
 import { verifyToken } from "../utils";
+import { handleHttpError } from "../utils/error.handle";
 
 const checkJWT = async (req: RequestExt, res: Response, next: NextFunction) => {
   try {
@@ -9,13 +10,14 @@ const checkJWT = async (req: RequestExt, res: Response, next: NextFunction) => {
     const isUser = (await verifyToken(`${jwt}`)) as { id: string };
 
     if (!isUser) {
-      res.status(401).send("INVALID_JWT");
+      //res.status(401).send("INVALID_JWT");
+      handleHttpError(res, 401, "INVALID_JWT");
     } else {
       req.user = isUser;
       next();
     }
   } catch (error) {
-    res.status(500).send("NOT_VALID_SESSION");
+    handleHttpError(res, 500, "NOT_VALID_SESSION");
   }
 };
 

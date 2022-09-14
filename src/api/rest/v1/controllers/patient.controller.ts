@@ -7,6 +7,7 @@ import {
   updatePatientUser,
   updateUserPatient,
 } from "../services";
+import { handleHttpError } from "../utils/error.handle";
 
 const getPatientsByUser = async ({ user }: RequestExt, res: Response) => {
   try {
@@ -21,7 +22,7 @@ const getPatientsByUser = async ({ user }: RequestExt, res: Response) => {
 
     return res.send(userWithPatients.patients);
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    handleHttpError(res, 500, "SERVER_ERROR");
   }
 };
 
@@ -52,7 +53,7 @@ const postPatient = async (req: Request, res: Response) => {
 
     res.status(201).send(patientDb);
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    handleHttpError(res, 500, "SERVER_ERROR");
   }
 };
 
@@ -82,9 +83,11 @@ const addPatient = async ({ user, body }: RequestExt, res: Response) => {
 
     //si ya existe el paciente conectado a ese mismo usuario
     if (exactDuplicate)
-      return res.status(409).json({
-        message: "PATIENT_WITH_SAME_DOCUMENT_AND_EMAIL_ALREADY_IN_THIS_USER",
-      }); //Conflict
+      handleHttpError(
+        res,
+        409,
+        "PATIENT_WITH_SAME_DOCUMENT_AND_EMAIL_ALREADY_IN_THIS_USER"
+      ); //Conflict
 
     //si existe el paciente , mas no esta conectado a este usuario
     const duplicate = await findPatient({ document, email });
@@ -121,7 +124,7 @@ const addPatient = async ({ user, body }: RequestExt, res: Response) => {
 
     res.status(201).json({ message: "Created and added patient to this user" });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    handleHttpError(res, 500, "SERVER_ERROR");
   }
 };
 

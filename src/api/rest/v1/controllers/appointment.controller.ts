@@ -8,13 +8,14 @@ import {
   findPatient,
   saveAppointment,
 } from "../services";
+import { handleHttpError } from "../utils/error.handle";
 
 const getAllAppointments = async (req: Request, res: Response) => {
   try {
     const appointments = await findAllAppointments();
     res.send(appointments);
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    handleHttpError(res, 500, "SERVER_ERROR");
   }
 };
 
@@ -25,12 +26,12 @@ const getAppointment = async (req: Request, res: Response) => {
     const appointment = await findAppointment({ _id });
 
     if (!appointment) {
-      return res.status(404).json({ message: "Not found" });
+      handleHttpError(res, 404, "APPOINTMENT_NOT_FOUND");
     }
 
     res.send(appointment);
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    handleHttpError(res, 500, "SERVER_ERROR");
   }
 };
 
@@ -40,7 +41,7 @@ const postAppointment = async (req: Request, res: Response) => {
     const medic = await findMedic({ _id: req.params.idMedic });
 
     if (!patient || !medic)
-      return res.status(404).json({ message: "Not found" });
+      handleHttpError(res, 404, "PATIENT_OR_MEDIC_DOESN'T_EXIST");
 
     const { date, appointmentType } = req.body;
 
@@ -53,7 +54,7 @@ const postAppointment = async (req: Request, res: Response) => {
 
     return res.status(201).send(saved);
   } catch (error) {
-    return res.status(500).json({ message: "Server error" });
+    handleHttpError(res, 500, "SERVER_ERROR");
   }
 };
 
@@ -62,7 +63,7 @@ const getAppointmentsByPatient = async (req: Request, res: Response) => {
     const appointments = await findAppointmentsByPatient(req.params.idPatient);
     return res.send(appointments);
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    handleHttpError(res, 500, "SERVER_ERROR");
   }
 };
 

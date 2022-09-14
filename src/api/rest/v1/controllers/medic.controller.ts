@@ -6,6 +6,7 @@ import {
   saveMedic,
   updateMedic,
 } from "../services";
+import { handleHttpError } from "../utils/error.handle";
 
 const getAllMedics = async (req: Request, res: Response) => {
   try {
@@ -15,7 +16,7 @@ const getAllMedics = async (req: Request, res: Response) => {
     });
     res.send(medics);
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    handleHttpError(res, 500, "SERVER_ERROR");
   }
 };
 
@@ -24,12 +25,13 @@ const getMedic = async (req: Request, res: Response) => {
     const medic = await findMedic({ _id: req.params.id });
 
     if (!medic) {
-      return res.status(404).json({ message: "Not found" });
+      handleHttpError(res, 404, "MEDIC_NOT_FOUND");
+      //return res.status(404).json({ message: "Not found" });
     }
 
     res.send(medic);
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    handleHttpError(res, 500, "SERVER_ERROR");
   }
 };
 
@@ -44,7 +46,7 @@ const postMedic = async (req: Request, res: Response) => {
     });
     res.status(201).send(medic);
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    handleHttpError(res, 500, "SERVER_ERROR");
   }
 };
 
@@ -61,11 +63,11 @@ const putMedic = async (req: Request, res: Response) => {
       schedule,
     });
 
-    if (!medic) return res.status(404).json({ message: "Not found" });
+    if (!medic) handleHttpError(res, 404, "MEDIC_NOT_FOUND");
 
     res.status(201).send({ medic, message: "Medico actualizado" });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    handleHttpError(res, 500, "SERVER_ERROR");
   }
 };
 
@@ -78,7 +80,7 @@ const getMedicsBySpeciality = async ({ params }: Request, res: Response) => {
 
     res.send(medics);
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    handleHttpError(res, 500, "SERVER_ERROR");
   }
 };
 
