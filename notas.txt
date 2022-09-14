@@ -46,3 +46,12 @@
 //   res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true });
 //   res.status(204).json({ message: "Logged out" });
 // };
+
+//login
+// Creates Secure Cookie with refresh token
+      // res.cookie("jwt", refreshToken, {
+      //   httpOnly: true,
+      //   secure: true,
+      //   sameSite: "none",
+      //   maxAge: 24 * 60 * 60 * 1000,
+      // });

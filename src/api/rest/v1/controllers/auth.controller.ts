@@ -23,19 +23,11 @@ const loginController = async ({ body }: Request, res: Response) => {
     if (responseUser === "PASSWORD_INCORRECT") {
       res.status(403).json({ message: responseUser });
     } else {
-      //TODO: hacer una interfaz de la respuesta pa que no de error
       const { accessToken, refreshToken, user } = responseUser as {
         accessToken: string;
         refreshToken: string;
         user: any;
       };
-      // Creates Secure Cookie with refresh token
-      // res.cookie("jwt", refreshToken, {
-      //   httpOnly: true,
-      //   secure: true,
-      //   sameSite: "none",
-      //   maxAge: 24 * 60 * 60 * 1000,
-      // });
 
       // TODO: Send authorization roles (medico y user normal)
       // Send access token and user

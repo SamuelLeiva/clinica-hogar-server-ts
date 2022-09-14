@@ -12,19 +12,13 @@ const getAllMedics = async (req: Request, res: Response) => {
     let medics = (await findAllMedics()).map((medic) => {
       medic.schedule = [];
       return medic;
-    }); //depende de los casos de uso si queremos mostrar el schedule
-    // medics = medics.map((medic) => {
-    //   //TODO: averiguar si este sanitizer se puede separar y reusar
-    //   medic.schedule = [];
-    //   return medic;
-    // });
+    });
     res.send(medics);
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
 };
 
-//TODO: ver si se puede hacer validaciones a los params y si es seguro pasar por ahi data
 const getMedic = async (req: Request, res: Response) => {
   try {
     const medic = await findMedic({ _id: req.params.id });
@@ -75,7 +69,6 @@ const putMedic = async (req: Request, res: Response) => {
   }
 };
 
-//TODO: aca ver para devolver medics sin schedule
 const getMedicsBySpeciality = async ({ params }: Request, res: Response) => {
   try {
     const medics = (await findMedicsBySpeciality(params.idSpe)).map((medic) => {
