@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { check } from "express-validator";
-import { validateResult } from "../utils/validation.handle";
+import { validateResult } from "../utils";
 
 const validateCreateSpeciality = [
   check("name").exists().not().isEmpty(),

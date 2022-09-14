@@ -5,7 +5,7 @@ import {
   refreshController,
   registerController,
 } from "../controllers";
-import { checkJWT } from "../middlewares/session";
+import { checkJWT } from "../middlewares";
 import { validateLogin, validateRegister } from "../validations";
 
 const router = express.Router();

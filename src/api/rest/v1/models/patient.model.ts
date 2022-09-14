@@ -1,5 +1,5 @@
 import { Schema, Document, model, Model } from "mongoose";
-import { Patient } from "../interfaces/patient.interface";
+import { Patient } from "../interfaces";
 
 const PatientSchema: Schema = new Schema<Patient>(
   {

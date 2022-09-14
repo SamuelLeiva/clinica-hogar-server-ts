@@ -1,4 +1,4 @@
-import { Speciality } from "../interfaces/speciality.interface";
+import { Speciality } from "../interfaces";
 import { SpecialityModel } from "../models";
 
 const findAllSpecialities = async () => {

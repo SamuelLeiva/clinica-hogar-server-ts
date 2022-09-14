@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { RequestExt } from "../interfaces/req-ext.interface";
+import { RequestExt } from "../interfaces";
 import {
   findPatient,
   findUser,

@@ -42,7 +42,6 @@ const getMedic = async (req: Request, res: Response) => {
 const postMedic = async (req: Request, res: Response) => {
   try {
     const { firstName, lastNameF, lastNameM, speciality } = req.body;
-    console.log("firstName", firstName);
     const medic = await saveMedic({
       firstName,
       lastNameF,

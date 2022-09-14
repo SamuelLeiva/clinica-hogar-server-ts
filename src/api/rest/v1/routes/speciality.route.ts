@@ -4,7 +4,7 @@ import {
   getSpeciality,
   postSpeciality,
 } from "../controllers";
-import { checkJWT } from "../middlewares/session";
+import { checkJWT } from "../middlewares";
 import { validateCreateSpeciality } from "../validations";
 
 const router = express.Router();

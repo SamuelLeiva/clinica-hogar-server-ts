@@ -1,11 +1,5 @@
 import { Request, Response } from "express";
-import * as jwt from "jsonwebtoken";
-
-import {
-  generateToken,
-  verifyRefreshToken,
-  verifyToken,
-} from "../utils/jwt.handle";
+import { generateToken, verifyRefreshToken } from "../utils";
 
 import {
   findPatient,
@@ -14,10 +8,9 @@ import {
   registerUser,
   savePatient,
   updatePatientUser,
-  updateUser,
   updateUserPatient,
 } from "../services";
-import { RequestExt } from "../interfaces/req-ext.interface";
+import { RequestExt } from "../interfaces";
 import { JwtPayload } from "jsonwebtoken";
 
 //iniciar sesión
@@ -79,8 +72,6 @@ const registerController = async ({ body }: Request, res: Response) => {
 
     const duplicatePatient = await findPatient({ email });
 
-    console.log("duplicatePatient", duplicatePatient);
-
     if (duplicatePatient) {
       //actualizamos el paciente
       await updatePatientUser(duplicatePatient._id, registeredUser._id);
@@ -88,8 +79,6 @@ const registerController = async ({ body }: Request, res: Response) => {
       //actualizamos el usuario
       await updateUserPatient(registeredUser._id, duplicatePatient._id);
     } else {
-      console.log("Entramos a crear el paciente");
-
       //creamos el paciente y lo conectamos
       const patientDB = await savePatient({
         firstName,
@@ -102,8 +91,6 @@ const registerController = async ({ body }: Request, res: Response) => {
         birthday,
         phoneNumber,
       });
-
-      console.log("Conectamos el paciente");
 
       //actualizamos el paciente
       await updatePatientUser(patientDB._id, registeredUser._id);
@@ -122,9 +109,7 @@ const registerController = async ({ body }: Request, res: Response) => {
 
 const logoutController = (req: RequestExt, res: Response) => {
   try {
-    console.log("req.user", req.user);
     delete req.user;
-    console.log("req.user", req.user);
     return res.send({ message: "Logged out" });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
@@ -134,75 +119,21 @@ const logoutController = (req: RequestExt, res: Response) => {
 const refreshController = async ({ user }: RequestExt, res: Response) => {
   try {
     const foundUser = await findUser({ email: user?.id });
-    console.log("foundUser", foundUser);
     if (!foundUser) return res.status(403).json({ message: "FORBIDDEN" }); //Forbidden
 
     const decoded = (await verifyRefreshToken(
       foundUser.refreshToken
     )) as JwtPayload;
 
-    console.log("decoded", decoded);
-
     if (foundUser.email !== decoded.id)
       return res.status(403).json({ message: "Unauthorized" }); //Unauthorized
     const accessToken = await generateToken(foundUser, "access");
-
-    console.log("accessToken", accessToken);
 
     return res.json({ accessToken });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
 };
-
-//usando cookies
-//refresh token
-// const refresh = async (req: Request, res: Response) => {
-//   const cookies = req.cookies;
-
-//   if (!cookies?.jwt) return res.status(401).json({ message: "Unauthorized" });
-//   const refreshToken = cookies.jwt;
-
-//   const foundUser = await findUser({ refreshToken });
-
-//   if (!foundUser) return res.status(403).json({ message: "Forbidden" }); //Forbidden
-
-//   // evaluate refresh jwt
-//   let decoded: any;
-
-//   decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_TOKEN_SECRET!);
-
-//   if (foundUser._id.toString() !== decoded._id)
-//     return res.status(403).json({ message: "Unauthorized" }); //Unauthorized
-
-//   const accessToken = await generateToken(foundUser, "access");
-
-//   res.json({ foundUser, accessToken });
-// };
-
-// //TODO: verificar que funcione el logout desde postman. Configurar cookies en postman
-// const logoutController = async (req: Request, res: Response) => {
-//   // On client, also delete the accessToken
-//   const cookies = req.cookies;
-
-//   console.log("cookies", cookies);
-
-//   if (!cookies?.jwt) return res.status(204).json({ message: "No content" }); //No content
-//   const refreshToken = cookies.jwt;
-
-//   // Is refreshToken in db?
-//   const foundUser = await findUser({ refreshToken });
-
-//   if (!foundUser) {
-//     res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true });
-//     return res.status(204).json({ message: "No content" });
-//   }
-
-//   // Delete refreshToken in db
-//   await updateUser(foundUser._id, { refreshToken: "" });
-//   res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true });
-//   res.status(204).json({ message: "Logged out" });
-// };
 
 export {
   loginController,

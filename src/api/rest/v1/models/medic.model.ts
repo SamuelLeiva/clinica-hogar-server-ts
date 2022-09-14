@@ -1,5 +1,5 @@
 import { model, Schema, Document, Model } from "mongoose";
-import { Medic } from "../interfaces/medic.interface";
+import { Medic } from "../interfaces";
 
 const MedicSchema: Schema = new Schema<Medic>(
   {

@@ -1,6 +1,6 @@
 import express from "express";
 import { getMyUser } from "../controllers";
-import { checkJWT } from "../middlewares/session";
+import { checkJWT } from "../middlewares";
 
 const router = express.Router();
 

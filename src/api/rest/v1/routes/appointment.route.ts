@@ -5,7 +5,7 @@ import {
   postAppointment,
   getAppointmentsByPatient,
 } from "../controllers";
-import { checkJWT } from "../middlewares/session";
+import { checkJWT } from "../middlewares";
 
 import { validateCreateAppointment } from "../validations";
 
