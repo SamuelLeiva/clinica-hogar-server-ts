@@ -14,6 +14,6 @@ router.post("/login", validateLogin, loginController);
 router.post("/register", validateRegister, registerController);
 router.post("/logout", checkJWT, logoutController);
 
-router.get("/refresh", refreshController);
+router.get("/refresh", checkJWT, refreshController);
 
 export default router;

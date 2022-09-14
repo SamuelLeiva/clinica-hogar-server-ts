@@ -1,7 +1,11 @@
 import { Request, Response } from "express";
 import * as jwt from "jsonwebtoken";
 
-import { generateToken } from "../utils/jwt.handle";
+import {
+  generateToken,
+  verifyRefreshToken,
+  verifyToken,
+} from "../utils/jwt.handle";
 
 import {
   findPatient,
@@ -14,6 +18,7 @@ import {
   updateUserPatient,
 } from "../services";
 import { RequestExt } from "../interfaces/req-ext.interface";
+import { JwtPayload } from "jsonwebtoken";
 
 //iniciar sesión
 const loginController = async ({ body }: Request, res: Response) => {
@@ -32,12 +37,12 @@ const loginController = async ({ body }: Request, res: Response) => {
         user: any;
       };
       // Creates Secure Cookie with refresh token
-      res.cookie("jwt", refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        maxAge: 24 * 60 * 60 * 1000,
-      });
+      // res.cookie("jwt", refreshToken, {
+      //   httpOnly: true,
+      //   secure: true,
+      //   sameSite: "none",
+      //   maxAge: 24 * 60 * 60 * 1000,
+      // });
 
       // TODO: Send authorization roles (medico y user normal)
       // Send access token and user
@@ -126,7 +131,29 @@ const logoutController = (req: RequestExt, res: Response) => {
   }
 };
 
-const refreshController = (req: RequestExt, res: Response) => {};
+const refreshController = async ({ user }: RequestExt, res: Response) => {
+  try {
+    const foundUser = await findUser({ email: user?.id });
+    console.log("foundUser", foundUser);
+    if (!foundUser) return res.status(403).json({ message: "FORBIDDEN" }); //Forbidden
+
+    const decoded = (await verifyRefreshToken(
+      foundUser.refreshToken
+    )) as JwtPayload;
+
+    console.log("decoded", decoded);
+
+    if (foundUser.email !== decoded.id)
+      return res.status(403).json({ message: "Unauthorized" }); //Unauthorized
+    const accessToken = await generateToken(foundUser, "access");
+
+    console.log("accessToken", accessToken);
+
+    return res.json({ accessToken });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 //usando cookies
 //refresh token
