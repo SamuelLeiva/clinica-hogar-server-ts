@@ -115,7 +115,16 @@ const registerController = async ({ body }: Request, res: Response) => {
   }
 };
 
-const logoutController = (req: RequestExt, res: Response) => {};
+const logoutController = (req: RequestExt, res: Response) => {
+  try {
+    console.log("req.user", req.user);
+    delete req.user;
+    console.log("req.user", req.user);
+    return res.send({ message: "Logged out" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 const refreshController = (req: RequestExt, res: Response) => {};
 
