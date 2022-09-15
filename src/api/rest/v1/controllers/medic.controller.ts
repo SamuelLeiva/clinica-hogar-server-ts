@@ -19,7 +19,7 @@ const getAllMedics = async (req: Request, res: Response) => {
 
 const getMedic = async (req: Request, res: Response) => {
   try {
-    const medic = await findMedic({ _id: req.params.id });
+    const medic = await findMedic(req.params.id);
 
     if (!medic) {
       handleHttpError(res, 404, "MEDIC_NOT_FOUND");

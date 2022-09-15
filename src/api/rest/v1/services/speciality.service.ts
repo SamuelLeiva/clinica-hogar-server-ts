@@ -1,12 +1,13 @@
 import { Speciality } from "../interfaces";
 import { SpecialityModel } from "../models";
+import { IndexSpeciality } from "../interfaces/speciality.interface";
 
 const findAllSpecialities = async () => {
   const allSpecialities = await SpecialityModel.find();
   return allSpecialities;
 };
 
-const findSpeciality = async (props: any) => {
+const findSpeciality = async (props: IndexSpeciality) => {
   const speciality = SpecialityModel.findOne({ ...props });
   return speciality;
 };

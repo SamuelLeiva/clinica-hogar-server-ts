@@ -34,25 +34,6 @@ const UserSchema: Schema = new Schema<User>(
   }
 );
 
-//esto tambien
-// userSchema.methods.toJSON = function (this: User) {
-//   const user = this;
-//   const userObject = user.toObject();
-
-//   delete userObject.password;
-//   delete userObject.refreshToken;
-
-//   return userObject;
-// };
-
-// //cambiar esto
-// userSchema.pre<IUser>("save", async function (next) {
-//   const user = this;
-//   if (user.isModified("password")) {
-//     user.password = await bcrypt.hash(user.password!, 8);
-//   }
-// });
-
 const UserModel = model("users", UserSchema);
 
 export default UserModel;

@@ -33,6 +33,7 @@ const postPatient = async (req: Request, res: Response) => {
       documentType,
       birthday,
       phoneNumber,
+      email,
     } = req.body;
 
     const patientDb = await savePatient({
@@ -44,6 +45,7 @@ const postPatient = async (req: Request, res: Response) => {
       documentType,
       birthday,
       phoneNumber,
+      email,
     });
 
     res.status(201).send(patientDb);

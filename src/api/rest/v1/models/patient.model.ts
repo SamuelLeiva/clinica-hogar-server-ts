@@ -58,7 +58,6 @@ const PatientSchema: Schema = new Schema<Patient>(
   }
 );
 
-//relacion con citas
 PatientSchema.virtual("appointments", {
   ref: "appointments",
   localField: "_id",

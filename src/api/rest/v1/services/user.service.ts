@@ -1,3 +1,4 @@
+import { IndexUser, User } from "../interfaces";
 import { UserModel } from "../models";
 
 const findAllUsers = async () => {
@@ -6,12 +7,12 @@ const findAllUsers = async () => {
 };
 
 //TODO: cambiar any por una interface luego
-const findUser = async (props: any) => {
+const findUser = async (props: IndexUser) => {
   const user = await UserModel.findOne({ ...props });
   return user;
 };
 
-const findUserWithPatients = async (props: any) => {
+const findUserWithPatients = async (props: IndexUser) => {
   const user = await UserModel.findOne({ ...props }).populate({
     path: "patients",
     populate: { path: "appointments" },
@@ -19,7 +20,7 @@ const findUserWithPatients = async (props: any) => {
   return user;
 };
 
-const saveUser = async (props: any) => {
+const saveUser = async (props: User) => {
   const user = UserModel.create({ ...props });
   return user;
 };

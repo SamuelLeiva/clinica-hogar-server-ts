@@ -1,3 +1,4 @@
+import { Appointment } from "../interfaces";
 import { AppointmentModel } from "../models";
 
 const findAllAppointments = async () => {
@@ -5,20 +6,19 @@ const findAllAppointments = async () => {
   return allAppointments;
 };
 
-const findAppointment = async (props: any) => {
-  const appointment = AppointmentModel.findOne({ ...props });
+const findAppointment = async (id: string) => {
+  const appointment = AppointmentModel.findOne({ _id: id });
   return appointment;
 };
 
-const saveAppointment = async (props: any) => {
+const saveAppointment = async ({ appointmentType, date }: Appointment) => {
   const appointment = AppointmentModel.create({
-    ...props,
+    appointmentType,
+    date,
   });
   return appointment;
 };
 
-//custom methods
-//TODO: cuando se poble medic que no aparezca schedule
 const findAppointmentsByPatient = async (patientId: string) => {
   const appointments = await AppointmentModel.find({
     patient: patientId,

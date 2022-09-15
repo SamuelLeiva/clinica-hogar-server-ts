@@ -23,7 +23,7 @@ const getAppointment = async (req: Request, res: Response) => {
   try {
     const _id = req.params.id;
 
-    const appointment = await findAppointment({ _id });
+    const appointment = await findAppointment(_id);
 
     if (!appointment) {
       handleHttpError(res, 404, "APPOINTMENT_NOT_FOUND");
@@ -38,7 +38,7 @@ const getAppointment = async (req: Request, res: Response) => {
 const postAppointment = async (req: Request, res: Response) => {
   try {
     const patient = await findPatient({ _id: req.params.idPatient });
-    const medic = await findMedic({ _id: req.params.idMedic });
+    const medic = await findMedic(req.params.idMedic);
 
     if (!patient || !medic)
       handleHttpError(res, 404, "PATIENT_OR_MEDIC_DOESN'T_EXIST");

@@ -47,7 +47,6 @@ const MedicSchema: Schema = new Schema<Medic>(
   }
 );
 
-//relationships
 MedicSchema.virtual("appointments", {
   ref: "appointments",
   localField: "_id",

@@ -1,3 +1,4 @@
+import { Medic } from "../interfaces";
 import { MedicModel } from "../models";
 
 const findAllMedics = async () => {
@@ -5,17 +6,17 @@ const findAllMedics = async () => {
   return allMedics;
 };
 
-const findMedic = async (props: any) => {
-  const medic = MedicModel.findOne({ ...props });
+const findMedic = async (id: string) => {
+  const medic = MedicModel.findOne({ _id: id });
   return medic;
 };
 
-const saveMedic = async (props: any) => {
+const saveMedic = async (props: Medic) => {
   const saved = await MedicModel.create({ ...props });
   return saved;
 };
 
-const updateMedic = async (id: string, props: any) => {
+const updateMedic = async (id: string, props: Medic) => {
   const medic = await MedicModel.findOneAndUpdate(
     { _id: id },
     {

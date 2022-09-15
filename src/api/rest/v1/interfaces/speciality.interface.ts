@@ -1,4 +1,8 @@
-export interface Speciality {
-  name: string;
+export interface IndexSpeciality {
+  _id?: string;
+  name?: string;
+}
+
+export interface Speciality extends IndexSpeciality {
   appointmentCost: number;
 }
