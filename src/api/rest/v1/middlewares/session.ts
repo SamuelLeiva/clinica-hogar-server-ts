@@ -14,6 +14,7 @@ const checkJWT = async (req: RequestExt, res: Response, next: NextFunction) => {
       handleHttpError(res, 401, "INVALID_JWT");
     } else {
       req.user = isUser;
+      console.log("isUser", isUser);
       next();
     }
   } catch (error) {

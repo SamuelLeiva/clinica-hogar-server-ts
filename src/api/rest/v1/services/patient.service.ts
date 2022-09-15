@@ -9,11 +9,11 @@ const findAllPatients = async () => {
 
 const findPatient = async (props: IndexPatient) => {
   const patient = await PatientModel.findOne({ ...props }).select([
-    "-deletedAt",
     "-users",
     "-updatedAt",
     "-createdAt",
   ]);
+  console.log("patient", patient);
   return patient;
 };
 

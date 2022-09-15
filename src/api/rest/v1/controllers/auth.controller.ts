@@ -30,9 +30,6 @@ const loginController = async ({ body }: Request, res: Response) => {
         user: User;
       };
 
-      // TODO: Send authorization roles (medico y user normal)
-      // Send access token and user
-      // TODO: check if is necessary sending the entire user
       return res.json({ user: { email: user.email }, accessToken });
     }
   } catch (error) {
@@ -114,13 +111,17 @@ const refreshController = async ({ user }: RequestExt, res: Response) => {
     const foundUser = await findUser({ email: user?.id });
     if (!foundUser) handleHttpError(res, 403, "FORBIDDEN"); //Forbidden
 
+    console.log("foundUser.email", foundUser.email);
+
     const decoded = (await verifyRefreshToken(
       foundUser.refreshToken
     )) as JwtPayload;
 
+    console.log("decoded.id", decoded.id);
+
     if (foundUser.email !== decoded.id)
       handleHttpError(res, 403, "UNAUTHORIZED"); //Unauthorized
-    const accessToken = await generateToken(foundUser, "access");
+    const accessToken = await generateToken(foundUser.email, "access");
 
     return res.json({ accessToken });
   } catch (error) {

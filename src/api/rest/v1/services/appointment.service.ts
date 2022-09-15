@@ -11,10 +11,17 @@ const findAppointment = async (id: string) => {
   return appointment;
 };
 
-const saveAppointment = async ({ appointmentType, date }: Appointment) => {
+const saveAppointment = async ({
+  appointmentType,
+  date,
+  patient,
+  medic,
+}: Appointment) => {
   const appointment = AppointmentModel.create({
     appointmentType,
     date,
+    patient,
+    medic,
   });
   return appointment;
 };

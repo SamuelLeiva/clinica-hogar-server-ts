@@ -44,6 +44,7 @@ const postAppointment = async (req: Request, res: Response) => {
       handleHttpError(res, 404, "PATIENT_OR_MEDIC_DOESN'T_EXIST");
 
     const { date, appointmentType } = req.body;
+    console.log("date", date);
 
     const saved = await saveAppointment({
       date,
@@ -54,6 +55,7 @@ const postAppointment = async (req: Request, res: Response) => {
 
     return res.status(201).send(saved);
   } catch (error) {
+    console.log("error", error);
     handleHttpError(res, 500, "SERVER_ERROR");
   }
 };
