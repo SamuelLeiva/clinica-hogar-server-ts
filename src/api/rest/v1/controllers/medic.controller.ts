@@ -6,14 +6,11 @@ import {
   saveMedic,
   updateMedic,
 } from "../services";
-import { handleHttpError } from "../utils/error.handle";
+import { handleHttpError } from "../utils";
 
 const getAllMedics = async (req: Request, res: Response) => {
   try {
-    let medics = (await findAllMedics()).map((medic) => {
-      medic.schedule = [];
-      return medic;
-    });
+    const medics = await findAllMedics();
     res.send(medics);
   } catch (error) {
     handleHttpError(res, 500, "SERVER_ERROR");
@@ -73,10 +70,7 @@ const putMedic = async (req: Request, res: Response) => {
 
 const getMedicsBySpeciality = async ({ params }: Request, res: Response) => {
   try {
-    const medics = (await findMedicsBySpeciality(params.idSpe)).map((medic) => {
-      medic.schedule = [];
-      return medic;
-    });
+    const medics = await findMedicsBySpeciality(params.idSpe);
 
     res.send(medics);
   } catch (error) {

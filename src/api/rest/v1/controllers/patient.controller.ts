@@ -3,24 +3,19 @@ import { RequestExt } from "../interfaces";
 import {
   findPatient,
   findUser,
+  findUserWithPatients,
   savePatient,
   updatePatientUser,
   updateUserPatient,
 } from "../services";
-import { handleHttpError } from "../utils/error.handle";
+import { handleHttpError } from "../utils";
 
 const getPatientsByUser = async ({ user }: RequestExt, res: Response) => {
   try {
     //buscar al user
-    const userDb = await findUser({ email: user!.id });
+    const userDb = await findUserWithPatients({ email: user!.id });
 
-    //poblamos al user
-    const userWithPatients = await userDb.populate({
-      path: "patients",
-      populate: { path: "appointments" },
-    });
-
-    return res.send(userWithPatients.patients);
+    return res.send(userDb.patients);
   } catch (error) {
     handleHttpError(res, 500, "SERVER_ERROR");
   }

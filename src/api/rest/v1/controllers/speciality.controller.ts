@@ -4,7 +4,7 @@ import {
   findSpeciality,
   saveSpeciality,
 } from "../services";
-import { handleHttpError } from "../utils/error.handle";
+import { handleHttpError } from "../utils";
 
 const getAllSpecialities = async (req: Request, res: Response) => {
   try {

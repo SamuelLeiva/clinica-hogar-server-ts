@@ -11,6 +11,14 @@ const findUser = async (props: any) => {
   return user;
 };
 
+const findUserWithPatients = async (props: any) => {
+  const user = await UserModel.findOne({ ...props }).populate({
+    path: "patients",
+    populate: { path: "appointments" },
+  });
+  return user;
+};
+
 const saveUser = async (props: any) => {
   const user = UserModel.create({ ...props });
   return user;
@@ -36,4 +44,11 @@ const updateUserPatient = async (idUser: string, idPatient: string) => {
   );
 };
 
-export { findAllUsers, findUser, saveUser, updateUser, updateUserPatient };
+export {
+  findAllUsers,
+  findUser,
+  findUserWithPatients,
+  saveUser,
+  updateUser,
+  updateUserPatient,
+};

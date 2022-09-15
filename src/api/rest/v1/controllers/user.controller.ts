@@ -2,7 +2,7 @@ import { Response } from "express";
 import { JwtPayload } from "jsonwebtoken";
 import { RequestExt } from "../interfaces";
 import { findPatient } from "../services";
-import { handleHttpError } from "../utils/error.handle";
+import { handleHttpError } from "../utils";
 
 const getMyUser = async (req: RequestExt, res: Response) => {
   try {

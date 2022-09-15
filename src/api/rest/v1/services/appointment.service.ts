@@ -25,12 +25,13 @@ const findAppointmentsByPatient = async (patientId: string) => {
   })
     .populate({
       path: "medic",
+      select: ["firstName", "lastNameF", "lastNameM"],
       populate: {
         path: "speciality",
+        select: ["name"],
       },
     })
-    .populate("patient");
-
+    .populate("patient", ["firstName", "lastNameF", "lastNameM"]);
   return appointments;
 };
 

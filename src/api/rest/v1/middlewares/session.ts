@@ -1,7 +1,7 @@
 import { Response, NextFunction } from "express";
 import { RequestExt } from "../interfaces";
 import { verifyToken } from "../utils";
-import { handleHttpError } from "../utils/error.handle";
+import { handleHttpError } from "../utils";
 
 const checkJWT = async (req: RequestExt, res: Response, next: NextFunction) => {
   try {

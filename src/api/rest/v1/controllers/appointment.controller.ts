@@ -8,7 +8,7 @@ import {
   findPatient,
   saveAppointment,
 } from "../services";
-import { handleHttpError } from "../utils/error.handle";
+import { handleHttpError } from "../utils";
 
 const getAllAppointments = async (req: Request, res: Response) => {
   try {

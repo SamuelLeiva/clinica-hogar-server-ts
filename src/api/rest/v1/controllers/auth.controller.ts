@@ -10,9 +10,9 @@ import {
   updatePatientUser,
   updateUserPatient,
 } from "../services";
-import { RequestExt } from "../interfaces";
+import { RequestExt, User } from "../interfaces";
 import { JwtPayload } from "jsonwebtoken";
-import { handleHttpError } from "../utils/error.handle";
+import { handleHttpError } from "../utils";
 
 //iniciar sesión
 const loginController = async ({ body }: Request, res: Response) => {
@@ -24,16 +24,16 @@ const loginController = async ({ body }: Request, res: Response) => {
     if (responseUser === "PASSWORD_INCORRECT") {
       handleHttpError(res, 403, responseUser);
     } else {
-      const { accessToken, refreshToken, user } = responseUser as {
+      const { accessToken, /*refreshToken,*/ user } = responseUser as {
         accessToken: string;
         refreshToken: string;
-        user: any;
+        user: User;
       };
 
       // TODO: Send authorization roles (medico y user normal)
       // Send access token and user
       // TODO: check if is necessary sending the entire user
-      return res.json({ user, accessToken });
+      return res.json({ user: { email: user.email }, accessToken });
     }
   } catch (error) {
     handleHttpError(res, 500, "SERVER_ERROR");

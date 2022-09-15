@@ -1,7 +1,7 @@
 import { MedicModel } from "../models";
 
 const findAllMedics = async () => {
-  const allMedics = await MedicModel.find();
+  const allMedics = await MedicModel.find().select("-schedule");
   return allMedics;
 };
 
@@ -29,7 +29,7 @@ const updateMedic = async (id: string, props: any) => {
 const findMedicsBySpeciality = async (idSpe: string) => {
   const medics = await MedicModel.find({
     speciality: idSpe,
-  });
+  }).select("-schedule");
   return medics;
 };
 
