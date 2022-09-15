@@ -1,14 +1,17 @@
-import { Request, Response } from "express";
+import { Response } from "express";
+import { JwtPayload } from "jsonwebtoken";
+import { RequestExt } from "../interfaces";
 import { findPatient } from "../services";
+import { handleHttpError } from "../utils";
 
-const getMyUser = async (req: Request, res: Response) => {
+const getMyUser = async (req: RequestExt, res: Response) => {
   try {
-    const user = req.body.user;
-    const patientDB = await findPatient({ document: user.document });
-    if (!patientDB) return res.status(404).json({ message: "Not found" });
-    return res.send(patientDB);
+    const user = req.user as JwtPayload;
+    const patientDB = await findPatient({ email: user.id });
+    if (!patientDB) handleHttpError(res, 404, "USER_NOT_FOUND");
+    res.send(patientDB);
   } catch (error) {
-    return res.status(500).json({ message: "Server error" });
+    handleHttpError(res, 500, "SERVER_ERROR");
   }
 };
 

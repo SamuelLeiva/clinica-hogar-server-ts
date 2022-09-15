@@ -1,38 +1,44 @@
-import mongoose from "mongoose";
-import { Appointment } from "../models";
+import { Appointment } from "../interfaces";
+import { AppointmentModel } from "../models";
 
 const findAllAppointments = async () => {
-  const allAppointments = await Appointment.find();
+  const allAppointments = await AppointmentModel.find();
   return allAppointments;
 };
 
-const findAppointment = async (props: any) => {
-  const appointment = Appointment.findOne({ ...props });
+const findAppointment = async (id: string) => {
+  const appointment = AppointmentModel.findOne({ _id: id });
   return appointment;
 };
 
-const saveAppointment = async (props: any) => {
-  const appointment = new Appointment({
-    ...props,
+const saveAppointment = async ({
+  appointmentType,
+  date,
+  patient,
+  medic,
+}: Appointment) => {
+  const appointment = AppointmentModel.create({
+    appointmentType,
+    date,
+    patient,
+    medic,
   });
-  const saved = await appointment.save();
-  return saved;
+  return appointment;
 };
 
-//custom methods
-//TODO: cuando se poble medic que no aparezca schedule
 const findAppointmentsByPatient = async (patientId: string) => {
-  const appointments = await Appointment.find({
+  const appointments = await AppointmentModel.find({
     patient: patientId,
   })
     .populate({
       path: "medic",
+      select: ["firstName", "lastNameF", "lastNameM"],
       populate: {
         path: "speciality",
+        select: ["name"],
       },
     })
-    .populate("patient");
-
+    .populate("patient", ["firstName", "lastNameF", "lastNameM"]);
   return appointments;
 };
 

@@ -17,6 +17,8 @@ import { startConnection } from "./config/database";
 
 import { corsOptions } from "./config/cors";
 import { allowedOrigins } from "./config/constants/allowedOrigins";
+import swaggerUi from "swagger-ui-express";
+import swaggerSetup from "./api/rest/v1/docs/swagger";
 
 const NAMESPACE = "Server";
 const router = express();
@@ -61,6 +63,13 @@ router.use(express.json());
 
 /** Cookies Middleware */
 router.use(cookieParser());
+
+//Swagger
+router.use(
+  "/api/v1/documentation",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSetup)
+);
 
 /** Routes */
 router.use("/api/v1/auth", authRoutes);

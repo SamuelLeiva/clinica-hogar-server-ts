@@ -1,14 +1,7 @@
 import { model, Schema, Document, Model } from "mongoose";
+import { Medic } from "../interfaces";
 
-export interface IMedic extends Document {
-  firstName?: string;
-  lastNameF?: string;
-  lastNameM?: string;
-  schedule?: any;
-  speciality?: any;
-}
-
-const medicSchema: Schema = new Schema(
+const MedicSchema: Schema = new Schema<Medic>(
   {
     firstName: {
       type: String,
@@ -45,21 +38,21 @@ const medicSchema: Schema = new Schema(
     speciality: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: "Speciality",
+      ref: "specialities",
     },
   },
   {
     timestamps: true,
+    versionKey: false,
   }
 );
 
-//relationships
-medicSchema.virtual("appointments", {
-  ref: "Appointment",
+MedicSchema.virtual("appointments", {
+  ref: "appointments",
   localField: "_id",
   foreignField: "medic",
 });
 
-const Medic: Model<IMedic> = model("Medic", medicSchema);
+const MedicModel = model("medics", MedicSchema);
 
-export default Medic;
+export default MedicModel;

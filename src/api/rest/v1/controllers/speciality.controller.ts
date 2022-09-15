@@ -4,13 +4,14 @@ import {
   findSpeciality,
   saveSpeciality,
 } from "../services";
+import { handleHttpError } from "../utils";
 
 const getAllSpecialities = async (req: Request, res: Response) => {
   try {
     const specialities = await findAllSpecialities();
     res.send(specialities);
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    handleHttpError(res, 500, "SERVER_ERROR");
   }
 };
 
@@ -21,12 +22,12 @@ const getSpeciality = async (req: Request, res: Response) => {
     const speciality = await findSpeciality({ _id });
 
     if (!speciality) {
-      return res.status(404).json({ message: "Not found" });
+      handleHttpError(res, 404, "SPECIALITY_NOT_FOUND");
     }
 
     res.send(speciality);
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    handleHttpError(res, 500, "SERVER_ERROR");
   }
 };
 
@@ -34,9 +35,11 @@ const postSpeciality = async (req: Request, res: Response) => {
   try {
     const { name, appointmentCost } = req.body;
     const speciality = await saveSpeciality({ name, appointmentCost });
+    if (speciality === "ALREADY_SPECIALITY")
+      handleHttpError(res, 400, speciality);
     res.status(201).json({ message: "Speciality created", speciality });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    handleHttpError(res, 500, "SERVER_ERROR");
   }
 };
 

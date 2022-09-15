@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { check } from "express-validator";
-import { validateResult } from "../helpers/validation.helper";
+import { validateResult } from "../utils";
 
 const validateCreatePatient = [
   check("firstName").exists().not().isEmpty(),

@@ -1,25 +1,34 @@
-import { Patient } from "../models";
+import { Patient } from "../interfaces";
+import { PatientModel } from "../models";
+import { IndexPatient } from "../interfaces";
 
 const findAllPatients = async () => {
-  const allPatients = await Patient.find();
+  const allPatients = await PatientModel.find();
   return allPatients;
 };
 
-const findPatient = async (props: any) => {
-  const patient = Patient.findOne({ ...props });
+const findPatient = async (props: IndexPatient) => {
+  const patient = await PatientModel.findOne({ ...props }).select([
+    "-users",
+    "-updatedAt",
+    "-createdAt",
+  ]);
+  console.log("patient", patient);
   return patient;
 };
 
-const savePatient = async (props: any) => {
-  const patient = new Patient({
+const savePatient = async (props: Patient) => {
+  const patient = await PatientModel.create({
     ...props,
   });
-  const patientDB = await patient.save();
-  return patientDB;
+  return patient;
 };
 
 const updatePatientUser = async (idPatient: string, idUser: string) => {
-  await Patient.updateOne({ _id: idPatient }, { $push: { users: idUser } });
+  await PatientModel.updateOne(
+    { _id: idPatient },
+    { $push: { users: idUser } }
+  );
 };
 
 export { findAllPatients, findPatient, savePatient, updatePatientUser };

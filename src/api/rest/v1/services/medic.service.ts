@@ -1,38 +1,36 @@
-import { Medic } from "../models";
+import { Medic } from "../interfaces";
+import { MedicModel } from "../models";
 
 const findAllMedics = async () => {
-  const allMedics = await Medic.find();
+  const allMedics = await MedicModel.find().select("-schedule");
   return allMedics;
 };
 
-const findMedic = async (props: any) => {
-  const medic = Medic.findOne({ ...props });
+const findMedic = async (id: string) => {
+  const medic = MedicModel.findOne({ _id: id });
   return medic;
 };
 
-const saveMedic = async (props: any) => {
-  const medic = new Medic({
-    ...props,
-  });
-  const saved = await medic.save();
-
+const saveMedic = async (props: Medic) => {
+  const saved = await MedicModel.create({ ...props });
   return saved;
 };
 
-const updateMedic = async (id: string, props: any) => {
-  const medic = await Medic.findOneAndUpdate(
+const updateMedic = async (id: string, props: Medic) => {
+  const medic = await MedicModel.findOneAndUpdate(
     { _id: id },
     {
       ...props,
-    }
+    },
+    { new: true }
   );
   return medic;
 };
 
 const findMedicsBySpeciality = async (idSpe: string) => {
-  const medics = await Medic.find({
+  const medics = await MedicModel.find({
     speciality: idSpe,
-  }).populate("speciality");
+  }).select("-schedule");
   return medics;
 };
 

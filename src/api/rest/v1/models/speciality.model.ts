@@ -1,11 +1,7 @@
 import { Schema, Document, model, Model } from "mongoose";
+import { Speciality } from "../interfaces";
 
-export interface ISpeciality extends Document {
-  name?: string;
-  appointmentCost?: number;
-}
-
-const specialitySchema = new Schema(
+const SpecialitySchema = new Schema<Speciality>(
   {
     name: {
       type: String,
@@ -19,15 +15,16 @@ const specialitySchema = new Schema(
   },
   {
     timestamps: true,
+    versionKey: false,
   }
 );
 
-specialitySchema.virtual("medics", {
-  ref: "Medic",
+SpecialitySchema.virtual("medics", {
+  ref: "medics",
   localField: "_id",
   foreignField: "speciality",
 });
 
-const Speciality: Model<ISpeciality> = model("Speciality", specialitySchema);
+const SpecialityModel = model("specialities", SpecialitySchema);
 
-export default Speciality;
+export default SpecialityModel;

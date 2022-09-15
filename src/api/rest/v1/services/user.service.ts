@@ -1,35 +1,55 @@
-import { User } from "../models";
+import { IndexUser, User } from "../interfaces";
+import { UserModel } from "../models";
 
 const findAllUsers = async () => {
-  const allUsers = await User.find();
+  const allUsers = await UserModel.find();
   return allUsers;
 };
 
-//cambiar any por una interface luego
-//las validaciones se haran con express-validator antes
-const findUser = async (props: any) => {
-  const user = User.findOne({ ...props });
+//TODO: cambiar any por una interface luego
+const findUser = async (props: IndexUser) => {
+  const user = await UserModel.findOne({ ...props });
   return user;
 };
 
-const saveUser = async (props: any) => {
-  const user = new User({ ...props });
-  const userDB = await user.save();
-  return userDB;
+const findUserWithPatients = async (props: IndexUser) => {
+  const user = await UserModel.findOne({ ...props }).populate({
+    path: "patients",
+    populate: { path: "appointments" },
+  });
+  return user;
+};
+
+const saveUser = async (props: User) => {
+  const user = UserModel.create({ ...props });
+  return user;
 };
 
 const updateUser = async (id: string, props: any) => {
-  const user = await User.findOneAndUpdate(
+  const user = await UserModel.findOneAndUpdate(
     { _id: id },
     {
       ...props,
+    },
+    {
+      new: true,
     }
   );
   return user;
 };
 
 const updateUserPatient = async (idUser: string, idPatient: string) => {
-  await User.updateOne({ _id: idUser }, { $push: { patients: idPatient } });
+  await UserModel.updateOne(
+    { _id: idUser },
+    { $push: { patients: idPatient } }
+  );
 };
 
-export { findAllUsers, findUser, saveUser, updateUser, updateUserPatient };
+export {
+  findAllUsers,
+  findUser,
+  findUserWithPatients,
+  saveUser,
+  updateUser,
+  updateUserPatient,
+};

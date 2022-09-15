@@ -8,13 +8,14 @@ import {
   findPatient,
   saveAppointment,
 } from "../services";
+import { handleHttpError } from "../utils";
 
 const getAllAppointments = async (req: Request, res: Response) => {
   try {
     const appointments = await findAllAppointments();
     res.send(appointments);
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    handleHttpError(res, 500, "SERVER_ERROR");
   }
 };
 
@@ -22,27 +23,28 @@ const getAppointment = async (req: Request, res: Response) => {
   try {
     const _id = req.params.id;
 
-    const appointment = await findAppointment({ _id });
+    const appointment = await findAppointment(_id);
 
     if (!appointment) {
-      return res.status(404).json({ message: "Not found" });
+      handleHttpError(res, 404, "APPOINTMENT_NOT_FOUND");
     }
 
     res.send(appointment);
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    handleHttpError(res, 500, "SERVER_ERROR");
   }
 };
 
 const postAppointment = async (req: Request, res: Response) => {
   try {
     const patient = await findPatient({ _id: req.params.idPatient });
-    const medic = await findMedic({ _id: req.params.idMedic });
+    const medic = await findMedic(req.params.idMedic);
 
     if (!patient || !medic)
-      return res.status(404).json({ message: "Not found" });
+      handleHttpError(res, 404, "PATIENT_OR_MEDIC_DOESN'T_EXIST");
 
     const { date, appointmentType } = req.body;
+    console.log("date", date);
 
     const saved = await saveAppointment({
       date,
@@ -53,7 +55,8 @@ const postAppointment = async (req: Request, res: Response) => {
 
     return res.status(201).send(saved);
   } catch (error) {
-    return res.status(500).json({ message: "Server error" });
+    console.log("error", error);
+    handleHttpError(res, 500, "SERVER_ERROR");
   }
 };
 
@@ -62,7 +65,7 @@ const getAppointmentsByPatient = async (req: Request, res: Response) => {
     const appointments = await findAppointmentsByPatient(req.params.idPatient);
     return res.send(appointments);
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    handleHttpError(res, 500, "SERVER_ERROR");
   }
 };
 

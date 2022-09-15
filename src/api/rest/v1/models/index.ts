@@ -1,5 +1,5 @@
-export { default as Appointment } from "./appointment.schema";
-export { default as Medic } from "./medic.schema";
-export { default as Patient } from "./patient.schema";
-export { default as Speciality } from "./speciality.schema";
-export { default as User } from "./user.schema";
+export { default as AppointmentModel } from "./appointment.model";
+export { default as MedicModel } from "./medic.model";
+export { default as PatientModel } from "./patient.model";
+export { default as SpecialityModel } from "./speciality.model";
+export { default as UserModel } from "./user.model";

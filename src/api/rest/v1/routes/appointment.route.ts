@@ -5,20 +5,36 @@ import {
   postAppointment,
   getAppointmentsByPatient,
 } from "../controllers";
+import { checkJWT } from "../middlewares";
 
-import { verifyJWT } from "../middlewares/verifyJWT.middleware";
 import { validateCreateAppointment } from "../validations";
 
 const router = express.Router();
+/**
+ * Get All appointments
+ * @openapi
+ * /api/v1/appointment:
+ *    get:
+ *      tags:
+ *        - appointment
+ *      summary: "List all appointments"
+ *      description: This endpoint lists all appointments
+ *      responses:
+ *        '200':
+ *          description: Return all appointments, even if there aren't appointments
+ *        '500':
+ *          description: Server error
+ */
+router.get("/", checkJWT, getAllAppointments);
+router.get("/:id", checkJWT, getAppointment);
 
-router.get("/", getAllAppointments);
-router.get("/:id", getAppointment);
 router.post(
   "/patient/:idPatient/medic/:idMedic",
+  checkJWT,
   validateCreateAppointment,
   postAppointment
 );
 
-router.get("/patient/:idPatient", verifyJWT, getAppointmentsByPatient);
+router.get("/patient/:idPatient", checkJWT, getAppointmentsByPatient);
 
 export default router;

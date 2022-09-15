@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { check } from "express-validator";
-import { validateResult } from "../helpers/validation.helper";
+import { validateResult } from "../utils";
 
 const validateCreateMedic = [
   check("firstName").exists().not().isEmpty(),
@@ -12,6 +12,4 @@ const validateCreateMedic = [
   },
 ];
 
-const validateUpdateMedic = [...validateCreateMedic];
-
-export { validateCreateMedic, validateUpdateMedic };
+export { validateCreateMedic };
